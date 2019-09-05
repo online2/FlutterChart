@@ -29,7 +29,7 @@ class LineChartPainter extends AxisChartPainter {
 
     Path cubicPath;
     Path linePath;
-
+    size = getChartDrawSize(size);
     for (var linData in data.lineBarsData) {
       switch (linData.lineMode) {
         case LineMode.LINEAR:
@@ -51,42 +51,24 @@ class LineChartPainter extends AxisChartPainter {
       }
       drawDots(canvas, size, linData);
     }
+    drawTitle(canvas,size);
   }
 
   //画直线
-  void drawLine(
-      Canvas canvas, Size size, Path linePath, LineChartBarData linData) {
+  void drawLine(Canvas canvas, Size size, Path linePath, LineChartBarData linData) {
     _setLinePaint(linData, size);
 
     if (linePath == null) {
       linePath = _generateLinePath(size, linData);
     }
-
     canvas.drawPath(linePath, barPaint);
   }
 
-  Path _generateLinePath(Size size, LineChartBarData linData) {
-      size = getChartDrawSize(size);
-   var linePath = Path();
-    Offset prev = Offset(getPixelX(linData.spots[0].x, size),
-        getPixelY(linData.spots[0].y, size));
-    linePath.moveTo(prev.dx, prev.dy);
-    int length = linData.spots.length;
-    for (int i = 1; i < length; i++) {
-      final current = Offset(
-        getPixelX(linData.spots[i].x, size),
-        getPixelY(linData.spots[i].y, size),
-      );
-      linePath.lineTo(current.dx, current.dy);
-    }
-    return linePath;
-  }
 
   Path drawLineFill(Canvas canvas, Size size, LineChartBarData linData) {
     if (!linData.lineFillData.show) {
       return null;
     }
-    size = getChartDrawSize(size);
 
     var linePath =  _generateLinePath(size, linData);
     var fillPath = Path.from(linePath);
@@ -145,12 +127,10 @@ class LineChartPainter extends AxisChartPainter {
   }
 
   //画贝塞尔曲线
-  void drawLineCubicBezier(
-      Canvas canvas, Path cubicPath, Size size, LineChartBarData linData) {
+  void drawLineCubicBezier(Canvas canvas, Path cubicPath, Size size, LineChartBarData linData) {
     _setLinePaint(linData, size);
 
-    var linePath =
-        cubicPath == null ? _generateCubicLinePath(size, linData) : cubicPath;
+    var linePath = cubicPath == null ? _generateCubicLinePath(size, linData) : cubicPath;
     canvas.drawPath(linePath, barPaint);
   }
 
@@ -158,7 +138,6 @@ class LineChartPainter extends AxisChartPainter {
     if (!linData.lineFillData.show) {
       return null;
     }
-    size = getChartDrawSize(size);
     var linePath = _generateCubicLinePath(size, linData);
     var fillPath = Path.from(linePath);
 
@@ -218,29 +197,107 @@ class LineChartPainter extends AxisChartPainter {
     if (!linData.dotData.show) {
       return;
     }
-    size = getChartDrawSize(size);
     linData.spots.forEach((spot) {
       if (linData.dotData.checkToShowDot(spot)) {
-        dotPaint.style = linData.dotData.isStroke
-            ? PaintingStyle.stroke
-            : PaintingStyle.fill;
+        dotPaint.style = linData.dotData.isStroke ? PaintingStyle.stroke : PaintingStyle.fill;
         var pixelX = getPixelX(spot.x, size);
         var pixelY = getPixelY(spot.y, size);
         //为了点中间不显示线，画了一个以画布为背景的实心圆
         if (linData.dotData.isStroke) {
           dotPaint.strokeWidth = linData.dotData.strokeWidth;
-          dotInnerPaint.color = data.backgroundColor == null
-              ? Colors.white
-              : data.backgroundColor;
-          canvas.drawCircle(
-              Offset(pixelX, pixelY), linData.dotData.dotSize, dotInnerPaint);
+          dotInnerPaint.color = data.backgroundColor == null ? Colors.white : data.backgroundColor;
+          canvas.drawCircle(Offset(pixelX, pixelY), linData.dotData.dotSize, dotInnerPaint);
         }
         dotPaint.color = linData.dotData.dotColor;
-        canvas.drawCircle(
-            Offset(pixelX, pixelY), linData.dotData.dotSize, dotPaint);
+        canvas.drawCircle(Offset(pixelX, pixelY), linData.dotData.dotSize, dotPaint);
       }
     });
   }
+
+  //画上下左右label
+  void drawTitle(Canvas canvas, Size size) {
+    if(!data.titlesData.show){
+      return;
+    }
+
+    final leftTitle = data.titlesData.leftTitles;
+    if(leftTitle.showTitles){
+      double verticalStep = data.minY;
+      while(verticalStep<=data.maxY){
+        double x = 0 + getLeftOffsetDrawSize();
+        double y =  getPixelY(verticalStep, size);
+        final text = leftTitle.getTitles((verticalStep));
+        TextSpan span = TextSpan(style: leftTitle.textStyle,text: text);
+        final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+        tp.layout(maxWidth: getHorizontalSpace());
+        x -= tp.width + leftTitle.margin;
+        y -= tp.height / 2;
+        tp.paint(canvas, Offset(x, y));
+
+        verticalStep += data.chartGridData.verticalInterval;
+      }
+    }
+
+
+    final rightTitles = data.titlesData.rightTitles;
+    if(rightTitles.showTitles){
+      double verticalStep = data.minY;
+      while(verticalStep<=data.maxY){
+        double x = size.width + getLeftOffsetDrawSize();
+        double y =  getPixelY(verticalStep, size);
+        final text = leftTitle.getTitles((verticalStep));
+        TextSpan span = TextSpan(style: rightTitles.textStyle,text: text);
+        final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+        tp.layout(maxWidth: getHorizontalSpace());
+        x += rightTitles.margin;
+        y -= tp.height / 2;
+        tp.paint(canvas, Offset(x, y));
+
+        verticalStep += data.chartGridData.verticalInterval;
+      }
+    }
+
+
+    final topTitle = data.titlesData.topTitles;
+    if(topTitle.showTitles){
+      double verticalStep = data.minX;
+      while(verticalStep<=data.maxX){
+        double x = getPixelX(verticalStep, size);
+        double y = 0 +getTopOffsetDrawSize();
+        final text = topTitle.getTitles((verticalStep));
+        TextSpan span = TextSpan(style: topTitle.textStyle,text: text);
+        final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+        tp.layout();
+        x -= tp.width / 2;
+        y -= tp.height +topTitle.margin;
+        tp.paint(canvas, Offset(x, y));
+        verticalStep += data.chartGridData.horizontalInterval;
+      }
+    }
+
+
+    final bottomTitle = data.titlesData.bottomTitles;
+    if(bottomTitle.showTitles){
+      double verticalStep = data.minX;
+      while(verticalStep<=data.maxX){
+        double x = getPixelX(verticalStep, size);
+        double y = size.height +getTopOffsetDrawSize();
+
+        final text = bottomTitle.getTitles((verticalStep));
+
+        TextSpan span = TextSpan(style: bottomTitle.textStyle,text: text);
+        final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+        tp.layout();
+        x -= tp.width / 2;
+        y += tp.height / 2;
+        tp.paint(canvas, Offset(x, y));
+
+        verticalStep += data.chartGridData.horizontalInterval;
+
+     }
+    }
+  }
+
 
   void _setLinePaint(LineChartBarData linData, Size size) {
     barPaint.strokeCap =
@@ -278,10 +335,7 @@ class LineChartPainter extends AxisChartPainter {
   }
 
   Path _generateCubicLinePath(Size size, LineChartBarData linData) {
-    size = getChartDrawSize(size);
-    double intensity = (linData.intensity > 1 ? 1 : linData.intensity) < 0.05
-        ? 0.05
-        : linData.intensity;
+    double intensity = (linData.intensity > 1 ? 1 : linData.intensity) < 0.05 ? 0.05 : linData.intensity;
     double prevDx = 0;
     double prevDy = 0;
     double curDx = 0;
@@ -291,8 +345,7 @@ class LineChartPainter extends AxisChartPainter {
     path.reset();
 
     //第一个点
-    Offset prev = Offset(getPixelX(linData.spots[0].x, size),
-        getPixelY(linData.spots[0].y, size));
+    Offset prev = Offset(getPixelX(linData.spots[0].x, size), getPixelY(linData.spots[0].y, size));
     path.moveTo(prev.dx, prev.dy);
 
     int length = linData.spots.length;
@@ -320,5 +373,85 @@ class LineChartPainter extends AxisChartPainter {
       prev = current;
     }
     return path;
+  }
+
+  Path _generateLinePath(Size size, LineChartBarData linData) {
+    var linePath = Path();
+    Offset prev = Offset(getPixelX(linData.spots[0].x, size), getPixelY(linData.spots[0].y, size));
+    linePath.moveTo(prev.dx, prev.dy);
+    int length = linData.spots.length;
+    for (int i = 1; i < length; i++) {
+      final current = Offset(
+        getPixelX(linData.spots[i].x, size),
+        getPixelY(linData.spots[i].y, size),
+      );
+      linePath.lineTo(current.dx, current.dy);
+    }
+    return linePath;
+  }
+
+
+
+
+
+  @override
+  double getHorizontalSpace() {
+    double sum = super.getHorizontalSpace();
+    if (data.titlesData.show) {
+
+      final leftSide = data.titlesData.leftTitles;
+      if (leftSide.showTitles) {
+        sum += leftSide.reservedSize + leftSide.margin;
+      }
+
+      final rightSide = data.titlesData.rightTitles;
+      if (rightSide.showTitles) {
+        sum += rightSide.reservedSize + rightSide.margin;
+      }
+
+    }
+    return sum;
+  }
+
+  @override
+  double getVerticalSpace() {
+    double sum = super.getVerticalSpace();
+    if (data.titlesData.show) {
+
+      final topSide = data.titlesData.topTitles;
+      if (topSide.showTitles) {
+        sum += topSide.reservedSize + topSide.margin;
+      }
+
+      final bottomSide = data.titlesData.bottomTitles;
+      if (bottomSide.showTitles) {
+        sum += bottomSide.reservedSize + bottomSide.margin;
+      }
+
+    }
+    return sum;
+  }
+
+  @override
+  double getLeftOffsetDrawSize() {
+    var sum = super.getLeftOffsetDrawSize();
+
+    final leftTitles = data.titlesData.leftTitles;
+    if (data.titlesData.show && leftTitles.showTitles) {
+      sum += leftTitles.reservedSize + leftTitles.margin;
+    }
+    return sum;
+  }
+
+  @override
+  double getTopOffsetDrawSize() {
+    var sum = super.getTopOffsetDrawSize();
+
+    final topTitles = data.titlesData.topTitles;
+    if (data.titlesData.show && topTitles.showTitles) {
+      sum += topTitles.reservedSize + topTitles.margin;
+    }
+
+    return sum;
   }
 }

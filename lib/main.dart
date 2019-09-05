@@ -61,19 +61,60 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 300,
               child: FlChart(
                 chart: LineChart(LineChartData(
+                  titlesData: ChartTitlesData(
+                      show: true,
+                      leftTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 22,
+                        textStyle: TextStyle(
+                            color: const Color(0xff68737d), fontSize: 10),
+                        getTitles: (value) {
+                          return "${value.toInt()}";
+                        },
+                        margin: 8,
+                      ),
+                      bottomTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 22,
+                        textStyle: TextStyle(
+                            color: const Color(0xff68737d), fontSize: 10),
+                        getTitles: (value) {
+                          return "${value.toInt()}";
+                        },
+                        margin: 8,
+                      ),
+                      rightTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 22,
+                        textStyle: TextStyle(
+                            color: const Color(0xff68737d), fontSize: 10),
+                        getTitles: (value) {
+                          return "${value.toInt()}";
+                        },
+                        margin: 8,
+                      ),
+                      topTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 22,
+                        textStyle: TextStyle(
+                            color: const Color(0xff68737d), fontSize: 10),
+                        getTitles: (value) {
+                          return "${value.toInt()}";
+                        },
+                        margin: 8,
+                      )),
                   gridData: ChartGridData(
-                    show: true,
-                    drawXAxisGrid: true,
-                    getXAxisGridLine: gridLine2,
-                    checkToShowXAxisGrid: (double value) {
-                      return value != 0;
-                    },
-                    drawYAxisGrid: true,
-                    getYAxisGridLine: gridLine,
-                    checkToShowYAxisGrid: (double value){
-                      return value != 0;
-                    }
-                  ),
+                      show: true,
+                      drawXAxisGrid: true,
+                      getXAxisGridLine: gridLine2,
+                      checkToShowXAxisGrid: (double value) {
+                        return value != 0;
+                      },
+                      drawYAxisGrid: true,
+                      getYAxisGridLine: gridLine,
+                      checkToShowYAxisGrid: (double value) {
+                        return value != 0;
+                      }),
                   borderData: ChartBorderData(
                       show: true,
                       border: Border.all(
@@ -86,33 +127,56 @@ class _MyHomePageState extends State<MyHomePage> {
                   maxY: 5,
 //                   backgroundColor: Colors.grey,
                   lineBarsData: [
-                    LineChartBarData(spots: [
-                      ChartPoint(1, 1),
-                      ChartPoint(3, 1.5),
-                      ChartPoint(5, 1.4),
-                      ChartPoint(7, 3.4),
-                      ChartPoint(10, 2),
-                      ChartPoint(12, 2.2),
-                      ChartPoint(13, 1.8),
-                    ], lineMode: LineMode.LINEAR, isStrokeCapRound:  false,lineColors: [Colors.red],lineWidth: 10,intensity: 2,
-                        dotData:LineDotData(isStroke: false,dotColor: Colors.black,dotSize: 5),
+                    LineChartBarData(
+                        spots: [
+                          ChartPoint(1, 1),
+                          ChartPoint(3, 1.5),
+                          ChartPoint(5, 1.4),
+                          ChartPoint(7, 3.4),
+                          ChartPoint(10, 2),
+                          ChartPoint(12, 2.2),
+                          ChartPoint(13, 1.8),
+                        ],
+                        lineMode: LineMode.LINEAR,
+                        isStrokeCapRound: false,
+                        lineColors: [Colors.red],
+                        lineWidth: 10,
+                        intensity: 2,
+                        dotData: LineDotData(
+                            isStroke: false,
+                            dotColor: Colors.black,
+                            dotSize: 5),
                         lineFillData: LineFillData(show: true, colors: [
                           Color(0xFFE57373),
-                        ]) ),
-                    LineChartBarData(spots: [
-                      ChartPoint(1, 2),
-                      ChartPoint(3, 2.5),
-                      ChartPoint(5, 2.4),
-                      ChartPoint(7, 4.4),
-                      ChartPoint(10, 3),
-                      ChartPoint(12, 3.2),
-                      ChartPoint(13, 2.8),
-                    ], lineMode: LineMode.CUBIC_BEZIER,isStrokeCapRound:  true ,lineColors: [Colors.blue,Colors.amberAccent,Colors.green],lineWidth: 5,intensity: 0.2
-                     ,dotData:LineDotData(isStroke: true,dotColor: Colors.black,dotSize: 4,strokeWidth: 2),
-                    lineFillData: LineFillData(show: true, colors: [
-                      Color(0x8023b6e6),
-                      Color(0x8802d39a),
-                    ]))
+                        ])),
+                    LineChartBarData(
+                        spots: [
+                          ChartPoint(1, 2),
+                          ChartPoint(3, 2.5),
+                          ChartPoint(5, 2.4),
+                          ChartPoint(7, 4.4),
+                          ChartPoint(10, 3),
+                          ChartPoint(12, 3.2),
+                          ChartPoint(13, 2.8),
+                        ],
+                        lineMode: LineMode.CUBIC_BEZIER,
+                        isStrokeCapRound: true,
+                        lineColors: [
+                          Colors.blue,
+                          Colors.amberAccent,
+                          Colors.green
+                        ],
+                        lineWidth: 5,
+                        intensity: 0.2,
+                        dotData: LineDotData(
+                            isStroke: true,
+                            dotColor: Colors.black,
+                            dotSize: 4,
+                            strokeWidth: 2),
+                        lineFillData: LineFillData(show: true, colors: [
+                          Color(0x8023b6e6),
+                          Color(0x8802d39a),
+                        ]))
                   ],
                 )),
               ),
