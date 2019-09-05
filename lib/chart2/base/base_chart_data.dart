@@ -45,7 +45,7 @@ class ChartTitlesData {
 
 class SideTitles {
   final bool showTitles;
-  final GetTitleFunction getTitles;
+  final GetTitleValueFormat getTitles;
   final double reservedSize;
   final TextStyle textStyle;
   final double margin;
@@ -62,7 +62,7 @@ class SideTitles {
   });
 }
 
-typedef GetTitleFunction = String Function(double value);
+typedef GetTitleValueFormat = String Function(double value);
 
 String defaultGetTitle(double value) {
   return '$value';
@@ -75,7 +75,7 @@ class ChartValue {
   final GetValueFormat valueFormat;
   final double margin;
 
-  ChartValue(
+  const ChartValue(
       {this.show = false,
       this.textStyle = const TextStyle(
         color: Colors.black,

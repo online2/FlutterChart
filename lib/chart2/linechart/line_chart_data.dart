@@ -117,7 +117,7 @@ class LineChartBarData {
     this.intensity =0.2,
     this.dotData =const LineDotData(),
     this.lineFillData,
-    this.chartValue
+    this.chartValue =  const ChartValue()
   });
 }
 

@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         textStyle: TextStyle(
                             color: const Color(0xff68737d), fontSize: 10),
                         getTitles: (value) {
-                          return "${value.toInt()}";
+                          return "${value.toInt()}K";
                         },
                         margin: 8,
                       ),
@@ -129,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   lineBarsData: [
                     LineChartBarData(
                       chartValue: ChartValue(show: true,textStyle:  TextStyle(color: Colors.black, fontSize: 10,fontWeight: FontWeight.bold),margin:6,valueFormat: (ChartPoint point){
-                        return point.y.toString() +"k";
+                        return point.y.toInt().toString() +" k";
                       }),
                         spots: [
                           ChartPoint(1, 1),

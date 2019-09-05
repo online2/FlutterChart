@@ -233,9 +233,7 @@ class LineChartPainter extends AxisChartPainter {
         pixelX -= tp.width/2 ;
         pixelY -= tp.height + linData.chartValue.margin;
         tp.paint(canvas, Offset(pixelX, pixelY));
-
       }
-
     });
   }
 
