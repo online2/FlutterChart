@@ -6,13 +6,14 @@ import 'dart:ui' as ui;
 
 class LineChartPainter extends AxisChartPainter {
   final LineChartData data;
-  Paint barPaint, dotPaint, dotInnerPaint, fillPaint;
+  Paint barPaint, dotPaint, dotInnerPaint, fillPaint,valuePaint;
 
   LineChartPainter(this.data) : super(data) {
     barPaint = Paint()..style = PaintingStyle.stroke;
     dotPaint = Paint()..style = PaintingStyle.fill;
     dotInnerPaint = Paint()..style = PaintingStyle.fill;
     fillPaint = Paint()..style = PaintingStyle.fill;
+    valuePaint = Paint();
   }
 
   @override
@@ -50,6 +51,7 @@ class LineChartPainter extends AxisChartPainter {
           break;
       }
       drawDots(canvas, size, linData);
+      drawValue(canvas,size,linData);
     }
     drawTitle(canvas,size);
   }
@@ -213,6 +215,30 @@ class LineChartPainter extends AxisChartPainter {
       }
     });
   }
+
+  //画点上面的值
+  void drawValue(Canvas canvas, Size size, LineChartBarData linData) {
+    if(!linData.chartValue.show){
+      return;
+    }
+    linData.spots.forEach((spot){
+      if(linData.chartValue.checkValueIsShow(spot)){
+        var pixelX = getPixelX(spot.x, size);
+        var pixelY = getPixelY(spot.y, size);
+        var valueFormat = linData.chartValue.valueFormat(spot);
+        TextSpan span = TextSpan(style:  linData.chartValue.textStyle,text: valueFormat);
+
+        final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+        tp.layout();
+        pixelX -= tp.width/2 ;
+        pixelY -= tp.height + linData.chartValue.margin;
+        tp.paint(canvas, Offset(pixelX, pixelY));
+
+      }
+
+    });
+  }
+
 
   //画上下左右label
   void drawTitle(Canvas canvas, Size size) {
@@ -454,4 +480,5 @@ class LineChartPainter extends AxisChartPainter {
 
     return sum;
   }
+
 }

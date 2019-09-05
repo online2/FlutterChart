@@ -128,6 +128,9 @@ class _MyHomePageState extends State<MyHomePage> {
 //                   backgroundColor: Colors.grey,
                   lineBarsData: [
                     LineChartBarData(
+                      chartValue: ChartValue(show: true,textStyle:  TextStyle(color: Colors.black, fontSize: 10,fontWeight: FontWeight.bold),margin:6,valueFormat: (ChartPoint point){
+                        return point.y.toString() +"k";
+                      }),
                         spots: [
                           ChartPoint(1, 1),
                           ChartPoint(3, 1.5),

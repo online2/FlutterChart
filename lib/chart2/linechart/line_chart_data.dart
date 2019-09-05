@@ -103,6 +103,9 @@ class LineChartBarData {
   final double intensity;
   final LineDotData dotData;
   final LineFillData lineFillData;
+  final ChartValue chartValue;
+
+
 
   const LineChartBarData({
     this.spots = const [],
@@ -113,7 +116,8 @@ class LineChartBarData {
     this.lineWidth = 1,
     this.intensity =0.2,
     this.dotData =const LineDotData(),
-    this.lineFillData
+    this.lineFillData,
+    this.chartValue
   });
 }
 
