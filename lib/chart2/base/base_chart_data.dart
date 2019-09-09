@@ -111,8 +111,8 @@ class ChartLegendStyle {
 
   const ChartLegendStyle(
       {this.showLegend = false,
-      this.chartLegendForm = ChartLegendForm.LINE,
-      this.chartLegendAlignment = ChartLegendAlignment.RIGHT,
+      this.chartLegendForm = ChartLegendForm.SQUARE,
+      this.chartLegendAlignment = ChartLegendAlignment.LEFT,
       this.chartLegendLocation = ChartLegendLocation.BOTTOM,
       this.textStyle = const TextStyle(color: Colors.black, fontSize: 10),
       this.margin = 5,
@@ -120,7 +120,7 @@ class ChartLegendStyle {
       this.legendSize = 20});
 }
 
-enum ChartLegendForm { SQUARE, CIRCLE, LINE }
+enum ChartLegendForm { SQUARE, CIRCLE }
 enum ChartLegendAlignment { LEFT, CENTER, RIGHT }
 enum ChartLegendLocation { TOP, BOTTOM }
 
