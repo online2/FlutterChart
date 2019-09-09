@@ -1,12 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_chart/chart2/base/touch_event.dart';
 
 import 'base_chart_data.dart';
 
 abstract class BaseChartPainter<D extends BaseChartData> extends CustomPainter {
   final D data;
   Paint borderPaint;
-
-  BaseChartPainter(this.data) {
+  TouchEventNotifier touchEventNotifier;
+  StreamSink<BaseTouchResponse> touchResponseSink;
+  BaseChartPainter(this.data,{this.touchEventNotifier,this.touchResponseSink}) {
     borderPaint = Paint()..style = PaintingStyle.stroke;
   }
 

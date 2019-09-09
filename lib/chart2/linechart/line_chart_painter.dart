@@ -1,19 +1,29 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_chart/chart2/axis/axis_chart_data.dart';
 import 'package:flutter_chart/chart2/axis/axis_chart_painter.dart';
+import 'package:flutter_chart/chart2/base/base_chart_data.dart';
+import 'package:flutter_chart/chart2/base/touch_event.dart';
 
 import 'line_chart_data.dart';
 import 'dart:ui' as ui;
 
 class LineChartPainter extends AxisChartPainter {
   final LineChartData data;
-  Paint barPaint, dotPaint, dotInnerPaint, fillPaint,valuePaint;
+  Paint barPaint, dotPaint, dotInnerPaint, fillPaint,valuePaint,legendPaint,touchLinePaint;
 
-  LineChartPainter(this.data) : super(data) {
+  LineChartPainter(this.data,TouchEventNotifier touchEventNotifier, StreamSink<BaseTouchResponse> touchResponseSink) :
+        super(data,touchEventNotifier:touchEventNotifier,touchResponseSink:touchResponseSink) {
     barPaint = Paint()..style = PaintingStyle.stroke;
     dotPaint = Paint()..style = PaintingStyle.fill;
     dotInnerPaint = Paint()..style = PaintingStyle.fill;
     fillPaint = Paint()..style = PaintingStyle.fill;
     valuePaint = Paint();
+    legendPaint = Paint()..style = PaintingStyle.fill;
+    touchLinePaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.black;
   }
 
   @override
@@ -54,6 +64,9 @@ class LineChartPainter extends AxisChartPainter {
       drawValue(canvas,size,linData);
     }
     drawTitle(canvas,size);
+
+    //todo 画图例 待想一个好一点的方案
+//    drawLegend(canvas,size);
   }
 
   //画直线
@@ -66,9 +79,9 @@ class LineChartPainter extends AxisChartPainter {
     canvas.drawPath(linePath, barPaint);
   }
 
-
+  //画直线线下方的填充色
   Path drawLineFill(Canvas canvas, Size size, LineChartBarData linData) {
-    if (!linData.lineFillData.show) {
+    if (!linData.lineFillStyle.show) {
       return null;
     }
 
@@ -91,24 +104,24 @@ class LineChartPainter extends AxisChartPainter {
     fillPath.lineTo(x, y);
     fillPath.close();
 
-    if (linData.lineFillData.colors.length == 1) {
-      fillPaint.color = linData.lineFillData.colors[0];
+    if (linData.lineFillStyle.colors.length == 1) {
+      fillPaint.color = linData.lineFillStyle.colors[0];
       fillPaint.shader = null;
     } else {
       List<double> stops = [];
-      if (linData.lineFillData.gradientColorStops == null ||
-          linData.lineFillData.gradientColorStops.length !=
-              linData.lineFillData.colors.length) {
-        linData.lineFillData.colors.asMap().forEach((index, color) {
-          double temp = 1.0 / linData.lineFillData.colors.length;
+      if (linData.lineFillStyle.gradientColorStops == null ||
+          linData.lineFillStyle.gradientColorStops.length !=
+              linData.lineFillStyle.colors.length) {
+        linData.lineFillStyle.colors.asMap().forEach((index, color) {
+          double temp = 1.0 / linData.lineFillStyle.colors.length;
           stops.add(temp * (index + 1));
         });
       } else {
-        stops = linData.lineFillData.gradientColorStops;
+        stops = linData.lineFillStyle.gradientColorStops;
       }
 
-      var from = linData.lineFillData.gradientFrom;
-      var to = linData.lineFillData.gradientTo;
+      var from = linData.lineFillStyle.gradientFrom;
+      var to = linData.lineFillStyle.gradientTo;
       fillPaint.shader = ui.Gradient.linear(
         Offset(
           getLeftOffsetDrawSize() + (size.width * from.dx),
@@ -118,7 +131,7 @@ class LineChartPainter extends AxisChartPainter {
           getLeftOffsetDrawSize() + (size.width * to.dx),
           getTopOffsetDrawSize() + (size.height * to.dy),
         ),
-        linData.lineFillData.colors,
+        linData.lineFillStyle.colors,
         stops,
       );
     }
@@ -136,8 +149,9 @@ class LineChartPainter extends AxisChartPainter {
     canvas.drawPath(linePath, barPaint);
   }
 
+  //画贝塞尔曲线下方的填充色
   Path drawCubicLineFill(Canvas canvas, Size size, LineChartBarData linData) {
-    if (!linData.lineFillData.show) {
+    if (!linData.lineFillStyle.show) {
       return null;
     }
     var linePath = _generateCubicLinePath(size, linData);
@@ -159,24 +173,24 @@ class LineChartPainter extends AxisChartPainter {
     fillPath.lineTo(x, y);
     fillPath.close();
 
-    if (linData.lineFillData.colors.length == 1) {
-      fillPaint.color = linData.lineFillData.colors[0];
+    if (linData.lineFillStyle.colors.length == 1) {
+      fillPaint.color = linData.lineFillStyle.colors[0];
       fillPaint.shader = null;
     } else {
       List<double> stops = [];
-      if (linData.lineFillData.gradientColorStops == null ||
-          linData.lineFillData.gradientColorStops.length !=
-              linData.lineFillData.colors.length) {
-        linData.lineFillData.colors.asMap().forEach((index, color) {
-          double temp = 1.0 / linData.lineFillData.colors.length;
+      if (linData.lineFillStyle.gradientColorStops == null ||
+          linData.lineFillStyle.gradientColorStops.length !=
+              linData.lineFillStyle.colors.length) {
+        linData.lineFillStyle.colors.asMap().forEach((index, color) {
+          double temp = 1.0 / linData.lineFillStyle.colors.length;
           stops.add(temp * (index + 1));
         });
       } else {
-        stops = linData.lineFillData.gradientColorStops;
+        stops = linData.lineFillStyle.gradientColorStops;
       }
 
-      var from = linData.lineFillData.gradientFrom;
-      var to = linData.lineFillData.gradientTo;
+      var from = linData.lineFillStyle.gradientFrom;
+      var to = linData.lineFillStyle.gradientTo;
       fillPaint.shader = ui.Gradient.linear(
         Offset(
           getLeftOffsetDrawSize() + (size.width * from.dx),
@@ -186,7 +200,7 @@ class LineChartPainter extends AxisChartPainter {
           getLeftOffsetDrawSize() + (size.width * to.dx),
           getTopOffsetDrawSize() + (size.height * to.dy),
         ),
-        linData.lineFillData.colors,
+        linData.lineFillStyle.colors,
         stops,
       );
     }
@@ -196,55 +210,55 @@ class LineChartPainter extends AxisChartPainter {
 
   //画线上的点
   void drawDots(Canvas canvas, Size size, LineChartBarData linData) {
-    if (!linData.dotData.show) {
+    if (!linData.lineDotStyle.show) {
       return;
     }
     linData.spots.forEach((spot) {
-      if (linData.dotData.checkToShowDot(spot)) {
-        dotPaint.style = linData.dotData.isStroke ? PaintingStyle.stroke : PaintingStyle.fill;
+      if (linData.lineDotStyle.checkToShowDot(spot)) {
+        dotPaint.style = linData.lineDotStyle.isStroke ? PaintingStyle.stroke : PaintingStyle.fill;
         var pixelX = getPixelX(spot.x, size);
         var pixelY = getPixelY(spot.y, size);
         //为了点中间不显示线，画了一个以画布为背景的实心圆
-        if (linData.dotData.isStroke) {
-          dotPaint.strokeWidth = linData.dotData.strokeWidth;
+        if (linData.lineDotStyle.isStroke) {
+          dotPaint.strokeWidth = linData.lineDotStyle.strokeWidth;
           dotInnerPaint.color = data.backgroundColor == null ? Colors.white : data.backgroundColor;
-          canvas.drawCircle(Offset(pixelX, pixelY), linData.dotData.dotSize, dotInnerPaint);
+          canvas.drawCircle(Offset(pixelX, pixelY), linData.lineDotStyle.dotSize, dotInnerPaint);
         }
-        dotPaint.color = linData.dotData.dotColor;
-        canvas.drawCircle(Offset(pixelX, pixelY), linData.dotData.dotSize, dotPaint);
+        dotPaint.color = linData.lineDotStyle.dotColor;
+        canvas.drawCircle(Offset(pixelX, pixelY), linData.lineDotStyle.dotSize, dotPaint);
       }
     });
   }
 
   //画点上面的值
   void drawValue(Canvas canvas, Size size, LineChartBarData linData) {
-    if(!linData.chartValue.show){
+    if(!linData.chartValueStyle.show){
       return;
     }
     linData.spots.forEach((spot){
-      if(linData.chartValue.checkValueIsShow(spot)){
+      if(linData.chartValueStyle.checkValueIsShow(spot)){
         var pixelX = getPixelX(spot.x, size);
         var pixelY = getPixelY(spot.y, size);
-        var valueFormat = linData.chartValue.valueFormat(spot);
-        TextSpan span = TextSpan(style:  linData.chartValue.textStyle,text: valueFormat);
+        var valueFormat = linData.chartValueStyle.valueFormat(spot);
+        TextSpan span = TextSpan(style:  linData.chartValueStyle.textStyle,text: valueFormat);
 
         final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
         tp.layout();
         pixelX -= tp.width/2 ;
-        pixelY -= tp.height + linData.chartValue.margin;
+        pixelY -= tp.height + linData.chartValueStyle.margin;
         tp.paint(canvas, Offset(pixelX, pixelY));
       }
     });
   }
 
 
-  //画上下左右label
+  //画上下左右 Axis label
   void drawTitle(Canvas canvas, Size size) {
-    if(!data.titlesData.show){
+    if(!data.titlesStyle.show){
       return;
     }
 
-    final leftTitle = data.titlesData.leftTitles;
+    final leftTitle = data.titlesStyle.leftTitles;
     if(leftTitle.showTitles){
       double verticalStep = data.minY;
       while(verticalStep<=data.maxY){
@@ -258,31 +272,31 @@ class LineChartPainter extends AxisChartPainter {
         y -= tp.height / 2;
         tp.paint(canvas, Offset(x, y));
 
-        verticalStep += data.chartGridData.verticalInterval;
+        verticalStep += data.chartGridStyle.verticalInterval;
       }
     }
 
 
-    final rightTitles = data.titlesData.rightTitles;
+    final rightTitles = data.titlesStyle.rightTitles;
     if(rightTitles.showTitles){
       double verticalStep = data.minY;
       while(verticalStep<=data.maxY){
         double x = size.width + getLeftOffsetDrawSize();
         double y =  getPixelY(verticalStep, size);
         final text = leftTitle.getTitles((verticalStep));
-        TextSpan span = TextSpan(style: rightTitles.textStyle,text: text);
+        TextSpan span = TextSpan(style: rightTitles.textStyle,text: text,);
         final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
         tp.layout(maxWidth: getHorizontalSpace());
         x += rightTitles.margin;
         y -= tp.height / 2;
         tp.paint(canvas, Offset(x, y));
 
-        verticalStep += data.chartGridData.verticalInterval;
+        verticalStep += data.chartGridStyle.verticalInterval;
       }
     }
 
 
-    final topTitle = data.titlesData.topTitles;
+    final topTitle = data.titlesStyle.topTitles;
     if(topTitle.showTitles){
       double verticalStep = data.minX;
       while(verticalStep<=data.maxX){
@@ -293,14 +307,14 @@ class LineChartPainter extends AxisChartPainter {
         final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
         tp.layout();
         x -= tp.width / 2;
-        y -= tp.height +topTitle.margin;
+        y -= tp.height + topTitle.margin;
         tp.paint(canvas, Offset(x, y));
-        verticalStep += data.chartGridData.horizontalInterval;
+        verticalStep += data.chartGridStyle.horizontalInterval;
       }
     }
 
 
-    final bottomTitle = data.titlesData.bottomTitles;
+    final bottomTitle = data.titlesStyle.bottomTitles;
     if(bottomTitle.showTitles){
       double verticalStep = data.minX;
       while(verticalStep<=data.maxX){
@@ -316,16 +330,111 @@ class LineChartPainter extends AxisChartPainter {
         y += tp.height / 2;
         tp.paint(canvas, Offset(x, y));
 
-        verticalStep += data.chartGridData.horizontalInterval;
+        verticalStep += data.chartGridStyle.horizontalInterval;
 
      }
     }
   }
 
+  //画图例
+  void drawLegend(Canvas canvas, Size size) {
+    if(!data.chartLegendStyle.showLegend  || data.chartLegendStyle.legendText == null || data.chartLegendStyle.legendText.length == 0) {
+      return;
+    }
+    if(data.lineBarsData.length != data.chartLegendStyle.legendText.length){
+      return;
+    }
+    var chartLegendStyle = data.chartLegendStyle;
+    if(chartLegendStyle.chartLegendLocation == ChartLegendLocation.BOTTOM){
+
+
+      if(chartLegendStyle.chartLegendAlignment == ChartLegendAlignment.LEFT){
+        double verticalStep = getLeftOffsetDrawSize();
+        for(int i = 0; i < data.chartLegendStyle.legendText.length; i++){
+          double legendX = verticalStep;
+          double x = legendX + chartLegendStyle.margin + chartLegendStyle.legendSize;
+          double y = size.height + getTopOffsetDrawSize()  + chartLegendStyle.margin;
+          TextSpan span = TextSpan(style: chartLegendStyle.textStyle,text: data.chartLegendStyle.legendText[i]);
+          final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+          tp.layout();
+          y += tp.height ;
+          double legendY = y + chartLegendStyle.margin + (tp.height - chartLegendStyle.legendSize/2)/2;
+          _setLegendPaint(chartLegendStyle,i, Offset(legendX, y), Offset( legendX + chartLegendStyle.legendSize, y));
+          if(chartLegendStyle.chartLegendForm == ChartLegendForm.LINE){
+            canvas.drawLine(Offset(legendX , legendY ), Offset(legendX + chartLegendStyle.legendSize, legendY ), legendPaint);
+          }
+          tp.paint(canvas, Offset(x, y));
+          verticalStep += tp.width + chartLegendStyle.margin * 2 + chartLegendStyle.legendSize;
+        }
+      }else if(chartLegendStyle.chartLegendAlignment == ChartLegendAlignment.RIGHT){
+        double verticalStep = size.width;
+        for(int i =  data.chartLegendStyle.legendText.length -1; i >= 0; i--){
+          double x = verticalStep;
+          double y = size.height + getTopOffsetDrawSize()  + chartLegendStyle.margin;
+
+          TextSpan span = TextSpan(style: chartLegendStyle.textStyle,text: data.chartLegendStyle.legendText[i]);
+          final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+          tp.layout();
+          y += tp.height ;
+          tp.paint(canvas, Offset(x, y));
+
+          double legendY = y + chartLegendStyle.margin + (tp.height - chartLegendStyle.legendSize /2)/2;
+          double legendX = x - chartLegendStyle.legendSize - chartLegendStyle.margin;
+          _setLegendPaint(chartLegendStyle,i, Offset(legendX, legendY), Offset( legendX + chartLegendStyle.legendSize, legendY));
+          if(chartLegendStyle.chartLegendForm == ChartLegendForm.LINE){
+            canvas.drawLine(Offset(legendX , legendY ), Offset(legendX + chartLegendStyle.legendSize, legendY ), legendPaint);
+          }
+          verticalStep -= tp.width + chartLegendStyle.margin + chartLegendStyle.legendSize;
+        }
+      }
+    }else{
+      double verticalStep = getLeftOffsetDrawSize();
+      for(int i = 0; i < data.chartLegendStyle.legendText.length; i++){
+        double legendX = verticalStep;
+        double x = legendX + chartLegendStyle.margin + chartLegendStyle.legendSize;
+        double y =  getTopOffsetDrawSize()  - chartLegendStyle.margin;
+        TextSpan span = TextSpan(style: chartLegendStyle.textStyle,text: data.chartLegendStyle.legendText[i]);
+        final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+        tp.layout();
+        y -= tp.height * 2;
+        double legendY = y - chartLegendStyle.margin - (tp.height - chartLegendStyle.legendSize/2)/2 + tp.height;
+
+        _setLegendPaint(chartLegendStyle,i, Offset(legendX, y), Offset( legendX + chartLegendStyle.legendSize, y));
+        if(chartLegendStyle.chartLegendForm == ChartLegendForm.LINE){
+          canvas.drawLine(Offset(legendX , legendY ), Offset(legendX + chartLegendStyle.legendSize, legendY ), legendPaint);
+        }
+        tp.paint(canvas, Offset(x, y));
+        verticalStep += tp.width + chartLegendStyle.margin * 2 + chartLegendStyle.legendSize;
+      }
+    }
+  }
+
+  void _setLegendPaint(ChartLegendStyle chartLegendStyle,int index,Offset start,Offset end){
+    LineChartBarData linData = data.lineBarsData[index];
+    if (linData.lineColors.length == 1) {
+      legendPaint.color = linData.lineColors[0];
+      legendPaint.shader = null;
+    }else{
+      List<double> stops = [];
+      if (linData.lineColorsStops == null ||
+          linData.lineColors.length != linData.lineColorsStops.length) {
+            linData.lineColors.asMap().forEach((index, color) {
+              double temp = 1 / linData.lineColors.length;
+              stops.add(temp * (index + 1));
+            });
+      } else {
+        stops = linData.lineColorsStops;
+      }
+
+      legendPaint.shader = ui.Gradient.linear(start, end, linData.lineColors, stops,
+      );
+    }
+      legendPaint.strokeWidth = chartLegendStyle.legendSize /2;
+  }
+
 
   void _setLinePaint(LineChartBarData linData, Size size) {
-    barPaint.strokeCap =
-        linData.isStrokeCapRound ? StrokeCap.round : StrokeCap.butt;
+    barPaint.strokeCap = linData.isStrokeCapRound ? StrokeCap.round : StrokeCap.butt;
     barPaint.strokeWidth = linData.lineWidth;
     if (linData.lineColors.length == 1) {
       //纯色
@@ -335,10 +444,10 @@ class LineChartPainter extends AxisChartPainter {
       List<double> stops = [];
       if (linData.lineColorsStops == null ||
           linData.lineColors.length != linData.lineColorsStops.length) {
-        linData.lineColors.asMap().forEach((index, color) {
-          double temp = 1 / linData.lineColors.length;
-          stops.add(temp * (index + 1));
-        });
+            linData.lineColors.asMap().forEach((index, color) {
+              double temp = 1 / linData.lineColors.length;
+              stops.add(temp * (index + 1));
+            });
       } else {
         stops = linData.lineColorsStops;
       }
@@ -421,14 +530,14 @@ class LineChartPainter extends AxisChartPainter {
   @override
   double getHorizontalSpace() {
     double sum = super.getHorizontalSpace();
-    if (data.titlesData.show) {
+    if (data.titlesStyle.show) {
 
-      final leftSide = data.titlesData.leftTitles;
+      final leftSide = data.titlesStyle.leftTitles;
       if (leftSide.showTitles) {
         sum += leftSide.reservedSize + leftSide.margin;
       }
 
-      final rightSide = data.titlesData.rightTitles;
+      final rightSide = data.titlesStyle.rightTitles;
       if (rightSide.showTitles) {
         sum += rightSide.reservedSize + rightSide.margin;
       }
@@ -440,14 +549,14 @@ class LineChartPainter extends AxisChartPainter {
   @override
   double getVerticalSpace() {
     double sum = super.getVerticalSpace();
-    if (data.titlesData.show) {
+    if (data.titlesStyle.show) {
 
-      final topSide = data.titlesData.topTitles;
+      final topSide = data.titlesStyle.topTitles;
       if (topSide.showTitles) {
         sum += topSide.reservedSize + topSide.margin;
       }
 
-      final bottomSide = data.titlesData.bottomTitles;
+      final bottomSide = data.titlesStyle.bottomTitles;
       if (bottomSide.showTitles) {
         sum += bottomSide.reservedSize + bottomSide.margin;
       }
@@ -460,8 +569,8 @@ class LineChartPainter extends AxisChartPainter {
   double getLeftOffsetDrawSize() {
     var sum = super.getLeftOffsetDrawSize();
 
-    final leftTitles = data.titlesData.leftTitles;
-    if (data.titlesData.show && leftTitles.showTitles) {
+    final leftTitles = data.titlesStyle.leftTitles;
+    if (data.titlesStyle.show && leftTitles.showTitles) {
       sum += leftTitles.reservedSize + leftTitles.margin;
     }
     return sum;
@@ -471,11 +580,13 @@ class LineChartPainter extends AxisChartPainter {
   double getTopOffsetDrawSize() {
     var sum = super.getTopOffsetDrawSize();
 
-    final topTitles = data.titlesData.topTitles;
-    if (data.titlesData.show && topTitles.showTitles) {
+    final topTitles = data.titlesStyle.topTitles;
+    if (data.titlesStyle.show && topTitles.showTitles) {
       sum += topTitles.reservedSize + topTitles.margin;
     }
-
+    if(data.chartLegendStyle.showLegend){
+      sum += data.chartLegendStyle.margin + data.chartLegendStyle.legendSize;
+    }
     return sum;
   }
 

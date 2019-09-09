@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chart/chart2/base/base_chart_data.dart';
 
 class AxisChartData extends BaseChartData {
-  final ChartGridData chartGridData;
+  final ChartGridStyle chartGridStyle;
   double minX, maxX;
   double minY, maxY;
   bool clipToBorder;
   Color backgroundColor;
 
   AxisChartData({
-    this.chartGridData = const ChartGridData(),
-    ChartBorderData borderData,
+    this.chartGridStyle = const ChartGridStyle(),
+    ChartBorderStyle borderData,
     this.minX, this.maxX,
     this.minY, this.maxY,
     this.clipToBorder = false,
@@ -36,7 +36,7 @@ bool showAllGrids(double value) {
   return true;
 }
 
-class ChartGridData {
+class ChartGridStyle {
   final bool show;
 
   // XAxisGrid
@@ -51,7 +51,7 @@ class ChartGridData {
   final GetGridLine getYAxisGridLine;
   final CheckToShowGrid checkToShowYAxisGrid;
 
-  const ChartGridData({
+  const ChartGridStyle({
     this.show = true,
     this.drawXAxisGrid = false,
     this.horizontalInterval = 1.0,

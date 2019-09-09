@@ -61,9 +61,10 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 300,
               child: FlChart(
                 chart: LineChart(LineChartData(
-                  titlesData: ChartTitlesData(
+                  chartLegendStyle: ChartLegendStyle(showLegend: true,textStyle: new TextStyle(color: Colors.red,fontSize: 12),legendText: ["测试1","测试二"]),
+                  titlesStyle: ChartTitlesStyle(
                       show: true,
-                      leftTitles: SideTitles(
+                      leftTitles: TitlesStyle(
                         showTitles: true,
                         reservedSize: 22,
                         textStyle: TextStyle(
@@ -73,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
                         margin: 8,
                       ),
-                      bottomTitles: SideTitles(
+                      bottomTitles: TitlesStyle(
                         showTitles: true,
                         reservedSize: 22,
                         textStyle: TextStyle(
@@ -83,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
                         margin: 8,
                       ),
-                      rightTitles: SideTitles(
+                      rightTitles: TitlesStyle(
                         showTitles: true,
                         reservedSize: 22,
                         textStyle: TextStyle(
@@ -93,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
                         margin: 8,
                       ),
-                      topTitles: SideTitles(
+                      topTitles: TitlesStyle(
                         showTitles: true,
                         reservedSize: 22,
                         textStyle: TextStyle(
@@ -103,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
                         margin: 8,
                       )),
-                  gridData: ChartGridData(
+                  gridData: ChartGridStyle(
                       show: true,
                       drawXAxisGrid: true,
                       getXAxisGridLine: gridLine2,
@@ -115,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       checkToShowYAxisGrid: (double value) {
                         return value != 0;
                       }),
-                  borderData: ChartBorderData(
+                  borderData: ChartBorderStyle(
                       show: true,
                       border: Border.all(
                           color: Colors.yellow,
@@ -128,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
 //                   backgroundColor: Colors.grey,
                   lineBarsData: [
                     LineChartBarData(
-                      chartValue: ChartValue(show: true,textStyle:  TextStyle(color: Colors.black, fontSize: 10,fontWeight: FontWeight.bold),margin:6,valueFormat: (ChartPoint point){
+                      chartValueStyle: ChartValueStyle(show: true,textStyle:  TextStyle(color: Colors.black, fontSize: 10,fontWeight: FontWeight.bold),margin:6,valueFormat: (ChartPoint point){
                         return point.y.toInt().toString() +" k";
                       }),
                         spots: [
@@ -145,11 +146,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         lineColors: [Colors.red],
                         lineWidth: 10,
                         intensity: 2,
-                        dotData: LineDotData(
+                        lineDotStyle: LineDotStyle(
                             isStroke: false,
                             dotColor: Colors.black,
                             dotSize: 5),
-                        lineFillData: LineFillData(show: true, colors: [
+                        lineFillStyle: LineFillStyle(show: true, colors: [
                           Color(0xFFE57373),
                         ])),
                     LineChartBarData(
@@ -171,12 +172,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         ],
                         lineWidth: 5,
                         intensity: 0.2,
-                        dotData: LineDotData(
+                        lineDotStyle: LineDotStyle(
                             isStroke: true,
                             dotColor: Colors.black,
                             dotSize: 4,
                             strokeWidth: 2),
-                        lineFillData: LineFillData(show: true, colors: [
+                        lineFillStyle: LineFillStyle(show: true, colors: [
                           Color(0x8023b6e6),
                           Color(0x8802d39a),
                         ]))

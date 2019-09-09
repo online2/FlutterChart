@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:ui';
 
+import 'package:flutter_chart/chart2/base/base_chart_data.dart';
 import 'package:flutter_chart/chart2/base/base_chart_painter.dart';
+import 'package:flutter_chart/chart2/base/touch_event.dart';
 
 import 'axis_chart_data.dart';
 
@@ -10,7 +13,8 @@ abstract class AxisChartPainter<D extends AxisChartData>
 
   Paint gridPaint, backgroundPaint;
 
-  AxisChartPainter(this.data) : super(data) {
+  AxisChartPainter(this.data,{TouchEventNotifier touchEventNotifier, StreamSink<BaseTouchResponse> touchResponseSink}) :
+        super(data,touchEventNotifier:touchEventNotifier,touchResponseSink:touchResponseSink) {
     gridPaint = Paint()..style = PaintingStyle.stroke;
 
     backgroundPaint = Paint()..style = PaintingStyle.fill;
@@ -27,16 +31,16 @@ abstract class AxisChartPainter<D extends AxisChartData>
   }
 
   void drawGrid(Canvas canvas, Size size) {
-    if (!data.chartGridData.show || data.chartGridData == null) {
+    if (!data.chartGridStyle.show || data.chartGridStyle == null) {
       return;
     }
 
 //    绘制竖直线
-    if (data.chartGridData.drawYAxisGrid) {
+    if (data.chartGridStyle.drawYAxisGrid) {
       double verticalStep = data.minY;
       while (verticalStep < data.maxY) {
-        if (data.chartGridData.checkToShowYAxisGrid(verticalStep)) {
-          final ChartLine chartLine = data.chartGridData.getYAxisGridLine(verticalStep);
+        if (data.chartGridStyle.checkToShowYAxisGrid(verticalStep)) {
+          final ChartLine chartLine = data.chartGridStyle.getYAxisGridLine(verticalStep);
           gridPaint.color = chartLine.color;
           gridPaint.strokeWidth = chartLine.strokeWidth;
 
@@ -47,16 +51,16 @@ abstract class AxisChartPainter<D extends AxisChartData>
           final double y2 = bothY;
           canvas.drawLine(Offset(x1, y1), Offset(x2, y2), gridPaint);
         }
-        verticalStep += data.chartGridData.verticalInterval;
+        verticalStep += data.chartGridStyle.verticalInterval;
       }
     }
 
     //绘制水平线
-    if (data.chartGridData.drawXAxisGrid) {
+    if (data.chartGridStyle.drawXAxisGrid) {
       double horizontalStep = data.minX;
       while (horizontalStep < data.maxX) {
-        if (data.chartGridData.checkToShowXAxisGrid(horizontalStep)) {
-          final ChartLine chartLine = data.chartGridData.getXAxisGridLine(horizontalStep);
+        if (data.chartGridStyle.checkToShowXAxisGrid(horizontalStep)) {
+          final ChartLine chartLine = data.chartGridStyle.getXAxisGridLine(horizontalStep);
           gridPaint.color = chartLine.color;
           gridPaint.strokeWidth = chartLine.strokeWidth;
 
@@ -67,7 +71,7 @@ abstract class AxisChartPainter<D extends AxisChartData>
           final double y2 = size.width + getTopOffsetDrawSize();
           canvas.drawLine(Offset(x1, y1), Offset(x2, y2), gridPaint);
         }
-        horizontalStep += data.chartGridData.horizontalInterval;
+        horizontalStep += data.chartGridStyle.horizontalInterval;
       }
     }
   }

@@ -4,13 +4,16 @@ import 'package:flutter_chart/chart2/base/base_chart_data.dart';
 
 class LineChartData extends AxisChartData {
   final List<LineChartBarData> lineBarsData;
-  final ChartTitlesData titlesData;
+  final ChartTitlesStyle titlesStyle;
+  final ChartLegendStyle chartLegendStyle;
+
 
   LineChartData({
     this.lineBarsData = const [],
-    this.titlesData = const ChartTitlesData(),
-    ChartGridData gridData = const ChartGridData(),
-    ChartBorderData borderData,
+    this.titlesStyle = const ChartTitlesStyle(),
+    this.chartLegendStyle = const ChartLegendStyle(),
+    ChartGridStyle gridData = const ChartGridStyle(),
+    ChartBorderStyle borderData,
     double minX,
     double maxX,
     double minY,
@@ -18,7 +21,7 @@ class LineChartData extends AxisChartData {
     bool clipToBorder = false,
     Color backgroundColor,
   }) : super(
-          chartGridData: gridData,
+          chartGridStyle: gridData,
           borderData: borderData,
           clipToBorder: clipToBorder,
           backgroundColor: backgroundColor,
@@ -92,6 +95,7 @@ class LineChartData extends AxisChartData {
 
 class LineChartBarData {
   final List<ChartPoint> spots;
+  //线的模式，直线和贝塞尔曲线
   final LineMode lineMode;
   //线两端是否圆角
   final bool isStrokeCapRound;
@@ -101,11 +105,12 @@ class LineChartBarData {
   final List<double> lineColorsStops;
   //贝塞尔曲线的控制计算偏移阀值 默认0.2 : Max = 1f = very cubic, Min = 0.05f = low cubic effect
   final double intensity;
-  final LineDotData dotData;
-  final LineFillData lineFillData;
-  final ChartValue chartValue;
-
-
+  //线上的点，样式
+  final LineDotStyle lineDotStyle;
+  //线以内的填充色样式
+  final LineFillStyle lineFillStyle;
+  //线上Value 值的样式
+  final ChartValueStyle chartValueStyle;
 
   const LineChartBarData({
     this.spots = const [],
@@ -115,9 +120,9 @@ class LineChartBarData {
     this.lineColorsStops,
     this.lineWidth = 1,
     this.intensity =0.2,
-    this.dotData =const LineDotData(),
-    this.lineFillData,
-    this.chartValue =  const ChartValue()
+    this.lineDotStyle =const LineDotStyle(),
+    this.lineFillStyle,
+    this.chartValueStyle =  const ChartValueStyle()
   });
 }
 
@@ -128,7 +133,7 @@ enum LineMode {
 }
 
 
-class LineDotData {
+class LineDotStyle {
   final bool show;
   final Color dotColor;
   final double dotSize;
@@ -137,7 +142,7 @@ class LineDotData {
 
   final CheckToShowDot checkToShowDot;
 
-  const LineDotData({
+  const LineDotStyle({
     this.show = true,
     this.isStroke = false,
     this.strokeWidth=1,
@@ -154,7 +159,7 @@ bool showAllDots(ChartPoint spot) {
 }
 
 //线下面的渐变色
-class LineFillData{
+class LineFillStyle{
   final bool show;
   final List<Color> colors;
   /// values are available between 0 to 1,
@@ -164,7 +169,7 @@ class LineFillData{
   final Offset gradientTo;
   final List<double> gradientColorStops;
 
-  const LineFillData({
+  const LineFillStyle({
     this.show = true,
     this.colors = const [Colors.blueGrey],
     this.gradientFrom = const Offset(0, 0),

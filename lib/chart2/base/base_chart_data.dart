@@ -1,21 +1,24 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_chart/chart2/axis/axis_chart_data.dart';
+import 'package:flutter_chart/chart2/base/touch_event.dart';
 
 class BaseChartData {
-  ChartBorderData borderData;
+  ChartBorderStyle borderData;
 
   BaseChartData({
     this.borderData,
   }) {
-    borderData ??= ChartBorderData();
+    borderData ??= ChartBorderStyle();
   }
 }
 
-class ChartBorderData {
+class ChartBorderStyle {
   final bool show;
   Border border;
 
-  ChartBorderData({
+  ChartBorderStyle({
     this.show = true,
     this.border,
   }) {
@@ -27,33 +30,31 @@ class ChartBorderData {
   }
 }
 
-class ChartTitlesData {
+class ChartTitlesStyle {
   final bool show;
 
-  final SideTitles leftTitles, topTitles, rightTitles, bottomTitles;
+  final TitlesStyle leftTitles, topTitles, rightTitles, bottomTitles;
 
-  const ChartTitlesData({
+  const ChartTitlesStyle({
     this.show = true,
-    this.leftTitles = const SideTitles(reservedSize: 40, showTitles: true),
-    this.topTitles = const SideTitles(reservedSize: 6),
-    this.rightTitles = const SideTitles(
-      reservedSize: 40,
-    ),
-    this.bottomTitles = const SideTitles(reservedSize: 22, showTitles: true),
+    this.leftTitles = const TitlesStyle(reservedSize: 40, showTitles: true),
+    this.topTitles = const TitlesStyle(reservedSize: 20),
+    this.rightTitles = const TitlesStyle(reservedSize: 40),
+    this.bottomTitles = const TitlesStyle(reservedSize: 20, showTitles: true),
   });
 }
 
-class SideTitles {
+class TitlesStyle {
   final bool showTitles;
   final GetTitleValueFormat getTitles;
   final double reservedSize;
   final TextStyle textStyle;
   final double margin;
 
-  const SideTitles({
+  const TitlesStyle({
     this.showTitles = false,
     this.getTitles = defaultGetTitle,
-    this.reservedSize = 22,
+    this.reservedSize = 20,
     this.textStyle = const TextStyle(
       color: Colors.black,
       fontSize: 11,
@@ -68,14 +69,14 @@ String defaultGetTitle(double value) {
   return '$value';
 }
 
-class ChartValue {
+class ChartValueStyle {
   final bool show;
   final TextStyle textStyle;
   final GetValueIsShow checkValueIsShow;
   final GetValueFormat valueFormat;
   final double margin;
 
-  const ChartValue(
+  const ChartValueStyle(
       {this.show = false,
       this.textStyle = const TextStyle(
         color: Colors.black,
@@ -96,4 +97,44 @@ bool defaultValueIsShow(ChartPoint point) {
 
 String defaultValueFormat(ChartPoint point) {
   return point.y.toString();
+}
+
+class ChartLegendStyle {
+  final bool showLegend;
+  final ChartLegendForm chartLegendForm;
+  final ChartLegendAlignment chartLegendAlignment;
+  final ChartLegendLocation chartLegendLocation;
+  final TextStyle textStyle;
+  final double margin;
+  final List<String> legendText;
+  final double legendSize;
+
+  const ChartLegendStyle(
+      {this.showLegend = false,
+      this.chartLegendForm = ChartLegendForm.LINE,
+      this.chartLegendAlignment = ChartLegendAlignment.RIGHT,
+      this.chartLegendLocation = ChartLegendLocation.BOTTOM,
+      this.textStyle = const TextStyle(color: Colors.black, fontSize: 10),
+      this.margin = 5,
+      this.legendText,
+      this.legendSize = 20});
+}
+
+enum ChartLegendForm { SQUARE, CIRCLE, LINE }
+enum ChartLegendAlignment { LEFT, CENTER, RIGHT }
+enum ChartLegendLocation { TOP, BOTTOM }
+
+
+class BaseTouchResponse {
+  final TouchEvent touchEvent;
+
+  BaseTouchResponse(this.touchEvent);
+}
+
+class ChartTouchData {
+  final bool enabled;
+
+  final StreamSink<BaseTouchResponse> touchResponseSink;
+
+  const ChartTouchData(this.enabled, this.touchResponseSink);
 }

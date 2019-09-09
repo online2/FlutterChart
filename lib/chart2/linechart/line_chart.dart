@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter_chart/chart2/axis/axis_chart.dart';
 import 'package:flutter_chart/chart2/base/base_chart_data.dart';
 import 'package:flutter_chart/chart2/base/base_chart_painter.dart';
+import 'package:flutter_chart/chart2/base/touch_event.dart';
 import 'package:flutter_chart/chart2/linechart/line_chart_painter.dart';
 
 import 'line_chart_data.dart';
@@ -16,7 +19,9 @@ class LineChart extends AxisChart {
   }
 
   @override
-  BaseChartPainter<BaseChartData> painter() {
-    return LineChartPainter(lineChartData);
+  BaseChartPainter<BaseChartData> painter({TouchEventNotifier touchEventNotifier, StreamSink<BaseTouchResponse> touchResponseSink}) {
+  return LineChartPainter(lineChartData,touchEventNotifier,touchResponseSink);
   }
+
+
 }
