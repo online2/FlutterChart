@@ -350,112 +350,136 @@ class LineChartPainter extends AxisChartPainter {
     double legendSize = chartLegendStyle.chartLegendForm == ChartLegendForm.SQUARE ? chartLegendStyle.legendSize / 2 :  chartLegendStyle.legendSize / 4;
 
     if (chartLegendStyle.chartLegendLocation == ChartLegendLocation.BOTTOM) {
-      if (chartLegendStyle.chartLegendAlignment == ChartLegendAlignment.LEFT) {
-        double verticalStep = getLeftOffsetDrawSize();
-        for (int i = 0; i < data.chartLegendStyle.legendText.length; i++) {
-          double legendX = verticalStep;
-          double x = legendX + chartLegendStyle.margin + chartLegendStyle.legendSize;
-          double y = size.height + getTopOffsetDrawSize();
-          TextSpan span = TextSpan(style: chartLegendStyle.textStyle, text: data.chartLegendStyle.legendText[i]);
-          final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
-          tp.layout();
-          y += tp.height;
-          if(chartLegendStyle.chartLegendForm == ChartLegendForm.SQUARE){
-            double legendY = y + tp.height / 2 - chartLegendStyle.legendSize / 4;
-            _setLegendPaint(chartLegendStyle, i, Offset(legendX, y), Offset(legendX + chartLegendStyle.legendSize, y));
-            canvas.drawRect(new Rect.fromLTRB(legendX, legendY, legendX + chartLegendStyle.legendSize, legendY + chartLegendStyle.legendSize / 2), legendPaint);
-            verticalStep +=chartLegendStyle.margin * 2;
-          }else{
-            x = legendX  + chartLegendStyle.legendSize / 2;
-            double legendY = y + tp.height / 2;
-            _setLegendPaint(chartLegendStyle, i, Offset(legendX, y), Offset(legendX + legendSize, y));
-            canvas.drawCircle(Offset(legendX, legendY), legendSize , legendPaint);
-          }
-          tp.paint(canvas, Offset(x, y));
-          verticalStep += tp.width + chartLegendStyle.legendSize;
-        }
-      } else if (chartLegendStyle.chartLegendAlignment == ChartLegendAlignment.RIGHT) {
-        double verticalStep = size.width;
-        for (int i = data.chartLegendStyle.legendText.length - 1; i >= 0; i--) {
-          double x = verticalStep;
-          double y = size.height + getTopOffsetDrawSize();
-          TextSpan span = TextSpan(style: chartLegendStyle.textStyle, text: data.chartLegendStyle.legendText[i]);
-          final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
-          tp.layout();
-          y = y + tp.height;
-          tp.paint(canvas, Offset(x, y));
-          double legendY;
-          double legendX;
-          if(chartLegendStyle.chartLegendForm == ChartLegendForm.SQUARE){
-             legendY = y + tp.height / 2 - chartLegendStyle.legendSize / 4;
-             legendX = x - chartLegendStyle.legendSize - chartLegendStyle.margin;
-             _setLegendPaint(chartLegendStyle, i, Offset(legendX, legendY), Offset(legendX + chartLegendStyle.legendSize, legendY));
-             canvas.drawRect(new Rect.fromLTRB(legendX, legendY, legendX + chartLegendStyle.legendSize, legendY + chartLegendStyle.legendSize / 2), legendPaint);
-             verticalStep -= chartLegendStyle.margin;
-          }else{
-            legendY = y + tp.height/2;
-            legendX =  x - legendSize - chartLegendStyle.margin;
-            _setLegendPaint(chartLegendStyle, i, Offset(x, legendY), Offset(x + legendSize, legendY));
-            canvas.drawCircle(Offset(legendX, legendY), legendSize, legendPaint);
-          }
-          verticalStep -= tp.width + chartLegendStyle.legendSize;
-        }
+      switch(chartLegendStyle.chartLegendAlignment){
+        case ChartLegendAlignment.LEFT:
+          _drawBottomLeftLegend(chartLegendStyle, size, canvas, legendSize);
+        break;
+        case  ChartLegendAlignment.RIGHT:
+          _drawBottomRightLegend(size, chartLegendStyle, canvas, legendSize);
+          break ;
+        case ChartLegendAlignment.CENTER:
+          break;
       }
     } else {
-      if (chartLegendStyle.chartLegendAlignment == ChartLegendAlignment.LEFT) {
-        double verticalStep = getLeftOffsetDrawSize();
-        for (int i = 0; i < data.chartLegendStyle.legendText.length; i++) {
-          double legendX = verticalStep;
-          double x ;
-          double y = getTopOffsetDrawSize() - chartLegendStyle.margin;
-          TextSpan span = TextSpan(style: chartLegendStyle.textStyle, text: data.chartLegendStyle.legendText[i]);
-          final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
-          tp.layout();
-          y -= tp.height * 2;
-          if(chartLegendStyle.chartLegendForm == ChartLegendForm.SQUARE){
-            x = legendX  + chartLegendStyle.legendSize +chartLegendStyle.margin;
-            double legendY = y + chartLegendStyle.legendSize / 4 + tp.height / 2;
-            _setLegendPaint(chartLegendStyle, i, Offset(legendX, y), Offset(legendX + chartLegendStyle.legendSize, y));
-            canvas.drawRect(new Rect.fromLTRB(legendX, legendY, legendX + chartLegendStyle.legendSize, legendY - legendSize), legendPaint);
-            verticalStep +=chartLegendStyle.margin * 2;
-          }else{
-            x = legendX  + chartLegendStyle.legendSize / 2;
-            double legendY = y + tp.height / 2;
-            _setLegendPaint(chartLegendStyle, i, Offset(legendX, y), Offset(legendX + legendSize, y));
-            canvas.drawCircle(Offset(legendX, legendY), legendSize , legendPaint);
-          }
-          tp.paint(canvas, Offset(x, y));
-          verticalStep += tp.width  + chartLegendStyle.legendSize;
-        }
-      } else if (chartLegendStyle.chartLegendAlignment == ChartLegendAlignment.RIGHT) {
-        double verticalStep = size.width;
-        for (int i = data.chartLegendStyle.legendText.length - 1; i >= 0; i--) {
-          double x = verticalStep;
-          double y = getTopOffsetDrawSize() - chartLegendStyle.margin;
-          TextSpan span = TextSpan(style: chartLegendStyle.textStyle, text: data.chartLegendStyle.legendText[i]);
-          final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
-          tp.layout();
-          y -= tp.height * 2;
-          tp.paint(canvas, Offset(x, y));
-          double legendY;
-          double legendX;
-          if (chartLegendStyle.chartLegendForm == ChartLegendForm.SQUARE) {
-            legendY =  y + chartLegendStyle.legendSize / 4 + tp.height / 2;
-            legendX = x - chartLegendStyle.legendSize - chartLegendStyle.margin;
-            _setLegendPaint(chartLegendStyle, i, Offset(legendX, legendY), Offset(legendX + chartLegendStyle.legendSize, legendY));
-            canvas.drawRect(new Rect.fromLTRB(legendX, legendY, legendX + chartLegendStyle.legendSize, legendY - legendSize), legendPaint);
-            verticalStep -= chartLegendStyle.margin;
-          }else{
-            legendY= y + tp.height / 2;
-            legendX = x - legendSize - chartLegendStyle.margin;
-            _setLegendPaint(chartLegendStyle, i, Offset(x, legendY), Offset(x + legendSize, legendY));
-            canvas.drawCircle(Offset(legendX, legendY), legendSize, legendPaint);
-          }
-          verticalStep -= tp.width  + chartLegendStyle.legendSize;
-        }
-      }else{
-
+      switch(chartLegendStyle.chartLegendAlignment){
+        case ChartLegendAlignment.LEFT:
+          _drawTopLeftLegend(chartLegendStyle, canvas, legendSize);
+          break;
+        case  ChartLegendAlignment.RIGHT:
+          _drawTopRightLegend(size, chartLegendStyle, canvas, legendSize);
+          break ;
+        case ChartLegendAlignment.CENTER:
+          break;
       }
+    }
+  }
+
+  void _drawTopRightLegend(Size size, ChartLegendStyle chartLegendStyle, Canvas canvas, double legendSize) {
+     double verticalStep = size.width;
+    for (int i = data.chartLegendStyle.legendText.length - 1; i >= 0; i--) {
+      double x = verticalStep;
+      double y = getTopOffsetDrawSize() - chartLegendStyle.margin;
+      TextSpan span = TextSpan(style: chartLegendStyle.textStyle, text: data.chartLegendStyle.legendText[i]);
+      final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+      tp.layout();
+      y -= tp.height * 2;
+      tp.paint(canvas, Offset(x, y));
+      double legendY;
+      double legendX;
+      if (chartLegendStyle.chartLegendForm == ChartLegendForm.SQUARE) {
+        legendY =  y + chartLegendStyle.legendSize / 4 + tp.height / 2;
+        legendX = x - chartLegendStyle.legendSize - chartLegendStyle.margin;
+        _setLegendPaint(chartLegendStyle, i, Offset(legendX, legendY), Offset(legendX + chartLegendStyle.legendSize, legendY));
+        canvas.drawRect(new Rect.fromLTRB(legendX, legendY, legendX + chartLegendStyle.legendSize, legendY - legendSize), legendPaint);
+        verticalStep -= chartLegendStyle.margin;
+      }else{
+        legendY= y + tp.height / 2;
+        legendX = x - legendSize - chartLegendStyle.margin;
+        _setLegendPaint(chartLegendStyle, i, Offset(x, legendY), Offset(x + legendSize, legendY));
+        canvas.drawCircle(Offset(legendX, legendY), legendSize, legendPaint);
+      }
+      verticalStep -= tp.width  + chartLegendStyle.legendSize;
+    }
+  }
+
+  void _drawTopLeftLegend(ChartLegendStyle chartLegendStyle, Canvas canvas, double legendSize) {
+     double verticalStep = getLeftOffsetDrawSize();
+    for (int i = 0; i < data.chartLegendStyle.legendText.length; i++) {
+      double legendX = verticalStep;
+      double x ;
+      double y = getTopOffsetDrawSize() - chartLegendStyle.margin;
+      TextSpan span = TextSpan(style: chartLegendStyle.textStyle, text: data.chartLegendStyle.legendText[i]);
+      final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+      tp.layout();
+      y -= tp.height * 2;
+      if(chartLegendStyle.chartLegendForm == ChartLegendForm.SQUARE){
+        x = legendX  + chartLegendStyle.legendSize +chartLegendStyle.margin;
+        double legendY = y + chartLegendStyle.legendSize / 4 + tp.height / 2;
+        _setLegendPaint(chartLegendStyle, i, Offset(legendX, y), Offset(legendX + chartLegendStyle.legendSize, y));
+        canvas.drawRect(new Rect.fromLTRB(legendX, legendY, legendX + chartLegendStyle.legendSize, legendY - legendSize), legendPaint);
+        verticalStep +=chartLegendStyle.margin * 2;
+      }else{
+        x = legendX  + chartLegendStyle.legendSize / 2;
+        double legendY = y + tp.height / 2;
+        _setLegendPaint(chartLegendStyle, i, Offset(legendX, y), Offset(legendX + legendSize, y));
+        canvas.drawCircle(Offset(legendX, legendY), legendSize , legendPaint);
+      }
+      tp.paint(canvas, Offset(x, y));
+      verticalStep += tp.width  + chartLegendStyle.legendSize;
+    }
+  }
+
+  void _drawBottomRightLegend(Size size, ChartLegendStyle chartLegendStyle, Canvas canvas, double legendSize) {
+     double verticalStep = size.width;
+    for (int i = data.chartLegendStyle.legendText.length - 1; i >= 0; i--) {
+      double x = verticalStep;
+      double y = size.height + getTopOffsetDrawSize();
+      TextSpan span = TextSpan(style: chartLegendStyle.textStyle, text: data.chartLegendStyle.legendText[i]);
+      final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+      tp.layout();
+      y = y + tp.height;
+      tp.paint(canvas, Offset(x, y));
+      double legendY;
+      double legendX;
+      if(chartLegendStyle.chartLegendForm == ChartLegendForm.SQUARE){
+         legendY = y + tp.height / 2 - chartLegendStyle.legendSize / 4;
+         legendX = x - chartLegendStyle.legendSize - chartLegendStyle.margin;
+         _setLegendPaint(chartLegendStyle, i, Offset(legendX, legendY), Offset(legendX + chartLegendStyle.legendSize, legendY));
+         canvas.drawRect(new Rect.fromLTRB(legendX, legendY, legendX + chartLegendStyle.legendSize, legendY + chartLegendStyle.legendSize / 2), legendPaint);
+         verticalStep -= chartLegendStyle.margin;
+      }else{
+        legendY = y + tp.height/2;
+        legendX =  x - legendSize - chartLegendStyle.margin;
+        _setLegendPaint(chartLegendStyle, i, Offset(x, legendY), Offset(x + legendSize, legendY));
+        canvas.drawCircle(Offset(legendX, legendY), legendSize, legendPaint);
+      }
+      verticalStep -= tp.width + chartLegendStyle.legendSize;
+    }
+  }
+
+  void _drawBottomLeftLegend(ChartLegendStyle chartLegendStyle, Size size, Canvas canvas, double legendSize) {
+      double verticalStep = getLeftOffsetDrawSize();
+    for (int i = 0; i < data.chartLegendStyle.legendText.length; i++) {
+      double legendX = verticalStep;
+      double x = legendX + chartLegendStyle.margin + chartLegendStyle.legendSize;
+      double y = size.height + getTopOffsetDrawSize();
+      TextSpan span = TextSpan(style: chartLegendStyle.textStyle, text: data.chartLegendStyle.legendText[i]);
+      final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+      tp.layout();
+      y += tp.height;
+      if(chartLegendStyle.chartLegendForm == ChartLegendForm.SQUARE){
+        double legendY = y + tp.height / 2 - chartLegendStyle.legendSize / 4;
+        _setLegendPaint(chartLegendStyle, i, Offset(legendX, y), Offset(legendX + chartLegendStyle.legendSize, y));
+        canvas.drawRect(new Rect.fromLTRB(legendX, legendY, legendX + chartLegendStyle.legendSize, legendY + chartLegendStyle.legendSize / 2), legendPaint);
+        verticalStep +=chartLegendStyle.margin * 2;
+      }else{
+        x = legendX  + chartLegendStyle.legendSize / 2;
+        double legendY = y + tp.height / 2;
+        _setLegendPaint(chartLegendStyle, i, Offset(legendX, y), Offset(legendX + legendSize, y));
+        canvas.drawCircle(Offset(legendX, legendY), legendSize , legendPaint);
+      }
+      tp.paint(canvas, Offset(x, y));
+      verticalStep += tp.width + chartLegendStyle.legendSize;
     }
   }
 
