@@ -11,14 +11,15 @@ class AxisChartData extends BaseChartData {
   AxisChartData({
     this.chartGridStyle = const ChartGridStyle(),
     ChartBorderStyle borderData,
-    ChartTouchData touchData,
-    this.minX, this.maxX,
-    this.minY, this.maxY,
+    ChartTouchStyle touchData,
+    this.minX,
+    this.maxX,
+    this.minY,
+    this.maxY,
     this.clipToBorder = false,
     this.backgroundColor,
-  }) : super(borderData: borderData,touchData:touchData);
+  }) : super(borderData: borderData, touchData: touchData);
 }
-
 
 //分割线相关
 typedef GetGridLine = ChartLine Function(double value);
@@ -58,14 +59,12 @@ class ChartGridStyle {
     this.horizontalInterval = 1.0,
     this.getXAxisGridLine = defaultGridLine,
     this.checkToShowXAxisGrid = showAllGrids,
-
     this.drawYAxisGrid = true,
     this.verticalInterval = 1.0,
     this.getYAxisGridLine = defaultGridLine,
     this.checkToShowYAxisGrid = showAllGrids,
   });
 }
-
 
 class ChartLine {
   final Color color;
@@ -76,7 +75,6 @@ class ChartLine {
     this.strokeWidth = 2,
   });
 }
-
 
 //点的坐标
 class ChartPoint {
@@ -96,16 +94,57 @@ class ChartPoint {
   }
 }
 
-
-
 abstract class TouchedPoint {
   final ChartPoint spot;
   final Offset offset;
 
   TouchedPoint(
-      this.spot,
-      this.offset,
-      );
+    this.spot,
+    this.offset,
+  );
 
   Color getColor();
 }
+
+class LimitLineData {
+  final bool showHorizontalLines;
+  final bool showHorizontalLimitTip;
+  final List<HorizontalLimitLine> horizontalLines;
+
+  final bool showVerticalLines;
+  final List<VerticalLimitLine> verticalLines;
+
+  const LimitLineData(
+      {this.showHorizontalLines = true,
+      this.showHorizontalLimitTip = true,
+      this.horizontalLines = const [],
+      this.showVerticalLines = true,
+      this.verticalLines = const []});
+}
+
+class HorizontalLimitLine extends ChartLine {
+  final double y;
+  final TextStyle textStyle;
+  final String text;
+  final double textMargin;
+  final HorizontalLimitAlignment limitAlignment;
+
+  HorizontalLimitLine(
+      {this.y,
+      Color color,
+      double strokeWidth,
+      this.textStyle = const TextStyle(color: Colors.black, fontSize: 10),
+      this.text,
+      this.textMargin = 5,
+      this.limitAlignment = HorizontalLimitAlignment.BOTTOM_CENTER})
+      : super(color: color, strokeWidth: strokeWidth);
+}
+
+class VerticalLimitLine extends ChartLine {
+  final double x;
+
+  VerticalLimitLine({this.x, Color color, double strokeWidth})
+      : super(color: color, strokeWidth: strokeWidth);
+}
+
+enum HorizontalLimitAlignment { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT,TOP_CENTER,BOTTOM_CENTER }

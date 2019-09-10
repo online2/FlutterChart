@@ -61,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 300,
               child: FlChart(
                 chart: LineChart(LineChartData(
+                  limitLineData: LimitLineData(showHorizontalLines: true,horizontalLines: [HorizontalLimitLine(y: 2.5,color: Colors.deepPurpleAccent,strokeWidth: 1,text: "限制线")],showVerticalLines: true,verticalLines: [VerticalLimitLine(x: 8,color: Colors.deepPurpleAccent,strokeWidth: 1)]),
                   chartLegendStyle: ChartLegendStyle(showLegend: true,textStyle: new TextStyle(color: Colors.red,fontSize: 12),legendText: ["测试1","测试二"]),
                   titlesStyle: ChartTitlesStyle(
                       show: true,

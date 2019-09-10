@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chart/chart2/axis/axis_chart_data.dart';
@@ -11,7 +10,7 @@ import 'dart:ui' as ui;
 
 class LineChartPainter extends AxisChartPainter {
   final LineChartData data;
-  Paint barPaint, dotPaint, dotInnerPaint, fillPaint,valuePaint,legendPaint,touchLinePaint;
+  Paint barPaint, dotPaint, dotInnerPaint, fillPaint,valuePaint,legendPaint,touchLinePaint,limitLinePaint;
 
   LineChartPainter(this.data,TouchEventNotifier touchEventNotifier) :
         super(data,touchEventNotifier:touchEventNotifier) {
@@ -21,10 +20,8 @@ class LineChartPainter extends AxisChartPainter {
     fillPaint = Paint()..style = PaintingStyle.fill;
     valuePaint = Paint();
     legendPaint = Paint()..style = PaintingStyle.fill;
-    touchLinePaint = Paint()
-      ..style = PaintingStyle.fill
-      ..strokeWidth = 1
-      ..color = Colors.black;
+    touchLinePaint = Paint()..style = PaintingStyle.fill;
+    limitLinePaint = Paint()..style =PaintingStyle.stroke;
   }
 
   @override
@@ -75,7 +72,11 @@ class LineChartPainter extends AxisChartPainter {
 
     drawLegend(canvas,size);
 
-    drawTouchIndicator(canvas,size,touchedSpots);
+    if(data.lineChartTouchStyle.isShowIndicator){
+      drawTouchIndicator(canvas,size,touchedSpots);
+    }
+
+    drawLimitLine(canvas,size);
   }
 
   //画直线
@@ -617,8 +618,9 @@ class LineChartPainter extends AxisChartPainter {
       return null;
     }
     var toucheOffset = touchEvent.getOffset();
+    double threshold = data.lineChartTouchStyle.indicatorThreshold;
     for(ChartPoint point in linData.spots){
-      if(toucheOffset.dx - getPixelX(point.x, size).abs() <= 10){
+      if((toucheOffset.dx - getPixelX(point.x, size)).abs() <= threshold && (toucheOffset.dy - getPixelY(point.y, size)).abs() <= threshold * 2 ){
         final Offset nearestSpotPos = Offset(
           getPixelX(point.x, size),
           getPixelY(point.y, size),
@@ -633,22 +635,88 @@ class LineChartPainter extends AxisChartPainter {
     if(touchEventNotifier == null  || touchEventNotifier.value == null){
       return;
     }
-    if(touchEventNotifier.value is ChartPressUp){
+//    手指抬起关闭indicatorLine
+//    if(touchEventNotifier.value is ChartPressUp){
+//      return;
+//    }
+    if(touchedSpots == null || touchedSpots.isEmpty){
       return;
     }
 
-   if(touchedSpots == null || touchedSpots.isEmpty){
-      return;
-   }
+    touchLinePaint.color = data.lineChartTouchStyle.indicatorColor;
+    touchLinePaint.strokeWidth = data.lineChartTouchStyle.indicatorWidth;
     touchedSpots.sort((a,b) =>a.offset.dy.compareTo(b.offset.dy));
-
     for(int i = 0; i < touchedSpots.length; i++){
       LineTouchedSpot touchedSpot = touchedSpots[i];
-      final from = Offset(touchedSpot.offset.dx,getTopOffsetDrawSize() + size.height);
-      final to = touchedSpot.offset;
-      canvas.drawLine(from, to, touchLinePaint);
+      final fromHor = Offset(getLeftOffsetDrawSize(),getPixelY(touchedSpot.spot.y,size));
+      final toHor = Offset(size.width +getLeftOffsetDrawSize(),getPixelY(touchedSpot.spot.y,size));
+      canvas.drawLine(fromHor, toHor, touchLinePaint);
+      final formVer = Offset(getPixelX(touchedSpot.spot.x, size),getTopOffsetDrawSize());
+      final toVer = Offset(getPixelX(touchedSpot.spot.x, size),size.shortestSide + getTopOffsetDrawSize());
+      canvas.drawLine(formVer, toVer, touchLinePaint);
+    }
+  }
+
+  //画限制线
+  void drawLimitLine(Canvas canvas, Size size) {
+    if(data.limitLineData == null){
+      return;
+    }
+    //水平限制线
+    if(data.limitLineData.showHorizontalLines){
+      for(HorizontalLimitLine limitLine in data.limitLineData.horizontalLines){
+        limitLinePaint.color = limitLine.color;
+        limitLinePaint.strokeWidth = limitLine.strokeWidth;
+        Offset from = Offset(getLeftOffsetDrawSize(), getPixelY(limitLine.y, size));
+        Offset to = Offset(size.width + getLeftOffsetDrawSize(), getPixelY(limitLine.y, size));
+        canvas.drawLine(from, to, limitLinePaint);
+        if(data.limitLineData.showHorizontalLimitTip){
+          TextSpan span = TextSpan(style: limitLine.textStyle, text: limitLine.text);
+          final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+          tp.layout();
+          double textX;
+          double textY;
+          switch(limitLine.limitAlignment){
+            case HorizontalLimitAlignment.TOP_LEFT:
+              textX = getLeftOffsetDrawSize() + size.width - limitLine.textMargin - tp.width;
+              textY = getPixelY(limitLine.y, size) - limitLine.textMargin - tp.height;
+              break;
+            case HorizontalLimitAlignment.TOP_RIGHT:
+              textX = getLeftOffsetDrawSize() + limitLine.textMargin;
+              textY = getPixelY(limitLine.y, size) - limitLine.textMargin - tp.height;
+              break;
+            case HorizontalLimitAlignment.TOP_CENTER:
+              textX = getLeftOffsetDrawSize() + size.width / 2 - tp.width / 2;
+              textY = getPixelY(limitLine.y, size) - limitLine.textMargin - tp.height;
+              break;
+            case HorizontalLimitAlignment.BOTTOM_LEFT:
+              textX = getLeftOffsetDrawSize() + size.width - limitLine.textMargin - tp.width;
+              textY = getPixelY(limitLine.y, size) + limitLine.textMargin ;
+              break;
+            case HorizontalLimitAlignment.BOTTOM_RIGHT:
+              textX = getLeftOffsetDrawSize() + limitLine.textMargin;
+              textY = getPixelY(limitLine.y, size) + limitLine.textMargin ;
+              break;
+            case HorizontalLimitAlignment.BOTTOM_CENTER:
+              textX = getLeftOffsetDrawSize() + size.width / 2 - tp.width/2;
+              textY = getPixelY(limitLine.y, size) + limitLine.textMargin ;
+              break;
+          }
+          tp.paint(canvas, Offset(textX, textY));
+        }
+      }
     }
 
+    if(data.limitLineData.showVerticalLines){
+      for(VerticalLimitLine limitLine in data.limitLineData.verticalLines){
+        limitLinePaint.color = limitLine.color;
+        limitLinePaint.strokeWidth = limitLine.strokeWidth;
+        Offset from = Offset( getPixelX(limitLine.x, size), getTopOffsetDrawSize());
+        Offset to = Offset( getPixelX(limitLine.x, size), getTopOffsetDrawSize() + size.height);
+        canvas.drawLine(from, to, limitLinePaint);
+
+      }
+    }
   }
 
 
@@ -657,17 +725,14 @@ class LineChartPainter extends AxisChartPainter {
   double getHorizontalSpace() {
     double sum = super.getHorizontalSpace();
     if (data.titlesStyle.show) {
-
       final leftSide = data.titlesStyle.leftTitles;
       if (leftSide.showTitles) {
         sum += leftSide.reservedSize + leftSide.margin;
       }
-
       final rightSide = data.titlesStyle.rightTitles;
       if (rightSide.showTitles) {
         sum += rightSide.reservedSize + rightSide.margin;
       }
-
     }
     return sum;
   }
@@ -676,17 +741,14 @@ class LineChartPainter extends AxisChartPainter {
   double getVerticalSpace() {
     double sum = super.getVerticalSpace();
     if (data.titlesStyle.show) {
-
       final topSide = data.titlesStyle.topTitles;
       if (topSide.showTitles) {
         sum += topSide.reservedSize + topSide.margin;
       }
-
       final bottomSide = data.titlesStyle.bottomTitles;
       if (bottomSide.showTitles) {
         sum += bottomSide.reservedSize + bottomSide.margin;
       }
-
     }
     return sum;
   }
@@ -694,7 +756,6 @@ class LineChartPainter extends AxisChartPainter {
   @override
   double getLeftOffsetDrawSize() {
     var sum = super.getLeftOffsetDrawSize();
-
     final leftTitles = data.titlesStyle.leftTitles;
     if (data.titlesStyle.show && leftTitles.showTitles) {
       sum += leftTitles.reservedSize + leftTitles.margin;
@@ -705,7 +766,6 @@ class LineChartPainter extends AxisChartPainter {
   @override
   double getTopOffsetDrawSize() {
     var sum = super.getTopOffsetDrawSize();
-
     final topTitles = data.titlesStyle.topTitles;
     if (data.titlesStyle.show && topTitles.showTitles) {
       sum += topTitles.reservedSize + topTitles.margin;
@@ -715,5 +775,6 @@ class LineChartPainter extends AxisChartPainter {
     }
     return sum;
   }
+
 
 }

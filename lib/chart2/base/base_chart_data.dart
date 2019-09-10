@@ -1,12 +1,10 @@
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chart/chart2/axis/axis_chart_data.dart';
-import 'package:flutter_chart/chart2/base/touch_event.dart';
 
 class BaseChartData {
   ChartBorderStyle borderData;
-  ChartTouchData touchData;
+  ChartTouchStyle touchData;
 
   BaseChartData({
     this.borderData,
@@ -127,15 +125,10 @@ enum ChartLegendAlignment { LEFT, CENTER, RIGHT }
 enum ChartLegendLocation { TOP, BOTTOM }
 
 
-class BaseTouchResponse {
-  final TouchEvent touchEvent;
 
-  BaseTouchResponse(this.touchEvent);
-}
-
-class ChartTouchData {
+class ChartTouchStyle {
   final bool enabled ;
 
 
-  const ChartTouchData({this.enabled = true});
+  const ChartTouchStyle(this.enabled);
 }

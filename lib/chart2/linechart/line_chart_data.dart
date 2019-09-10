@@ -7,13 +7,15 @@ class LineChartData extends AxisChartData {
   final List<LineChartBarData> lineBarsData;
   final ChartTitlesStyle titlesStyle;
   final ChartLegendStyle chartLegendStyle;
-  final ChartTouchData lineTouchData;
+  final LineChartTouchStyle lineChartTouchStyle;
+  final LimitLineData limitLineData;
 
   LineChartData({
     this.lineBarsData = const [],
     this.titlesStyle = const ChartTitlesStyle(),
     this.chartLegendStyle = const ChartLegendStyle(),
-    this.lineTouchData  = const ChartTouchData(),
+    this.lineChartTouchStyle = const LineChartTouchStyle(),
+    this.limitLineData = const LimitLineData(),
     ChartGridStyle gridData = const ChartGridStyle(),
     ChartBorderStyle borderData,
     double minX,
@@ -23,12 +25,11 @@ class LineChartData extends AxisChartData {
     bool clipToBorder = false,
     Color backgroundColor,
   }) : super(
-          chartGridStyle: gridData,
-          borderData: borderData,
-          clipToBorder: clipToBorder,
-          backgroundColor: backgroundColor,
-          touchData:lineTouchData
-        ) {
+            chartGridStyle: gridData,
+            borderData: borderData,
+            clipToBorder: clipToBorder,
+            backgroundColor: backgroundColor,
+            touchData: lineChartTouchStyle) {
     calculateMaxMin(minX, maxX, minY, maxY);
   }
 
@@ -98,35 +99,41 @@ class LineChartData extends AxisChartData {
 
 class LineChartBarData {
   final List<ChartPoint> spots;
+
   //线的模式，直线和贝塞尔曲线
   final LineMode lineMode;
+
   //线两端是否圆角
   final bool isStrokeCapRound;
   final double lineWidth;
   final List<Color> lineColors;
+
   //多个渐变色，停止的点
   final List<double> lineColorsStops;
+
   //贝塞尔曲线的控制计算偏移阀值 默认0.2 : Max = 1f = very cubic, Min = 0.05f = low cubic effect
   final double intensity;
+
   //线上的点，样式
   final LineDotStyle lineDotStyle;
+
   //线以内的填充色样式
   final LineFillStyle lineFillStyle;
+
   //线上Value 值的样式
   final ChartValueStyle chartValueStyle;
 
-  const LineChartBarData({
-    this.spots = const [],
-    this.lineMode = LineMode.LINEAR,
-    this.isStrokeCapRound,
-    this.lineColors = const [Colors.black],
-    this.lineColorsStops,
-    this.lineWidth = 1,
-    this.intensity =0.2,
-    this.lineDotStyle =const LineDotStyle(),
-    this.lineFillStyle,
-    this.chartValueStyle =  const ChartValueStyle()
-  });
+  const LineChartBarData(
+      {this.spots = const [],
+      this.lineMode = LineMode.LINEAR,
+      this.isStrokeCapRound,
+      this.lineColors = const [Colors.black],
+      this.lineColorsStops,
+      this.lineWidth = 1,
+      this.intensity = 0.2,
+      this.lineDotStyle = const LineDotStyle(),
+      this.lineFillStyle,
+      this.chartValueStyle = const ChartValueStyle()});
 }
 
 //线模式，直线和贝塞尔曲线
@@ -134,7 +141,6 @@ enum LineMode {
   LINEAR,
   CUBIC_BEZIER,
 }
-
 
 class LineDotStyle {
   final bool show;
@@ -148,7 +154,7 @@ class LineDotStyle {
   const LineDotStyle({
     this.show = true,
     this.isStroke = false,
-    this.strokeWidth=1,
+    this.strokeWidth = 1,
     this.dotColor = Colors.blue,
     this.dotSize = 4.0,
     this.checkToShowDot = showAllDots,
@@ -162,9 +168,10 @@ bool showAllDots(ChartPoint spot) {
 }
 
 //线下面的渐变色
-class LineFillStyle{
+class LineFillStyle {
   final bool show;
   final List<Color> colors;
+
   /// values are available between 0 to 1,
   /// Offset(0, 0) represent the top / left
   /// Offset(1, 1) represent the bottom / right
@@ -179,17 +186,16 @@ class LineFillStyle{
     this.gradientTo = const Offset(1, 0),
     this.gradientColorStops,
   });
-
 }
 
 class LineTouchedSpot extends TouchedPoint {
   LineChartBarData barData;
 
   LineTouchedSpot(
-      this.barData,
-      ChartPoint spot,
-      Offset offset,
-      ) : super(spot, offset);
+    this.barData,
+    ChartPoint spot,
+    Offset offset,
+  ) : super(spot, offset);
 
   @override
   Color getColor() {
@@ -197,12 +203,12 @@ class LineTouchedSpot extends TouchedPoint {
   }
 }
 
-class LineTouchResponse extends BaseTouchResponse {
+class LineChartTouchStyle extends ChartTouchStyle {
 
-  final List<LineTouchedSpot> spots;
+  final Color indicatorColor;
+  final double indicatorWidth;
+  final double indicatorThreshold;
+  final bool isShowIndicator;
 
-  LineTouchResponse(
-      this.spots,
-      TouchEvent touchEvent,
-      ) : super(touchEvent);
+  const LineChartTouchStyle({ bool enable = true,this.indicatorColor = Colors.black,this.indicatorWidth = 0.5,this.indicatorThreshold = 20,this.isShowIndicator = true}) : super(enable);
 }
