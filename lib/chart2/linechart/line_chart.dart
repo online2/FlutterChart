@@ -19,8 +19,8 @@ class LineChart extends AxisChart {
   }
 
   @override
-  BaseChartPainter<BaseChartData> painter({TouchEventNotifier touchEventNotifier, StreamSink<BaseTouchResponse> touchResponseSink}) {
-  return LineChartPainter(lineChartData,touchEventNotifier,touchResponseSink);
+  BaseChartPainter<BaseChartData> painter({TouchEventNotifier touchEventNotifier}) {
+  return LineChartPainter(lineChartData,touchEventNotifier);
   }
 
 

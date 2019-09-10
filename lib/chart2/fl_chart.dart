@@ -62,7 +62,10 @@ class _FlChartState extends State<FlChart> {
         _touchInputNotifier.value =  ChartPressUp(null);
       },
       child: CustomPaint(
-        painter: widget.chart.painter(),
+        painter: widget.chart.painter(
+          touchEventNotifier: _touchInputNotifier,
+        ),
+
       ),
     );
   }

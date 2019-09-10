@@ -6,6 +6,6 @@ import 'base_chart_data.dart';
 import 'base_chart_painter.dart';
 
 abstract class BaseChart {
-  BaseChartPainter painter({TouchEventNotifier touchEventNotifier, StreamSink<BaseTouchResponse> touchResponseSink});
+  BaseChartPainter painter({TouchEventNotifier touchEventNotifier});
   BaseChartData getData();
 }

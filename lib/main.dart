@@ -123,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           width: 1.0,
                           style: BorderStyle.solid)),
                   minX: 0,
-                  maxX: 14,
+                  maxX: 13,
                   minY: 0,
                   maxY: 5,
 //                   backgroundColor: Colors.grey,
@@ -133,6 +133,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         return point.y.toInt().toString() +" k";
                       }),
                         spots: [
+                          ChartPoint(0, 0),
+
                           ChartPoint(1, 1),
                           ChartPoint(3, 1.5),
                           ChartPoint(5, 1.4),
@@ -155,6 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ])),
                     LineChartBarData(
                         spots: [
+                          ChartPoint(0, 0),
                           ChartPoint(1, 2),
                           ChartPoint(3, 2.5),
                           ChartPoint(5, 2.4),

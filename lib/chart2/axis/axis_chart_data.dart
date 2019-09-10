@@ -11,11 +11,12 @@ class AxisChartData extends BaseChartData {
   AxisChartData({
     this.chartGridStyle = const ChartGridStyle(),
     ChartBorderStyle borderData,
+    ChartTouchData touchData,
     this.minX, this.maxX,
     this.minY, this.maxY,
     this.clipToBorder = false,
     this.backgroundColor,
-  }) : super(borderData: borderData);
+  }) : super(borderData: borderData,touchData:touchData);
 }
 
 
@@ -96,3 +97,15 @@ class ChartPoint {
 }
 
 
+
+abstract class TouchedPoint {
+  final ChartPoint spot;
+  final Offset offset;
+
+  TouchedPoint(
+      this.spot,
+      this.offset,
+      );
+
+  Color getColor();
+}

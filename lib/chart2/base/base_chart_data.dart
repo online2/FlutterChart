@@ -6,9 +6,11 @@ import 'package:flutter_chart/chart2/base/touch_event.dart';
 
 class BaseChartData {
   ChartBorderStyle borderData;
+  ChartTouchData touchData;
 
   BaseChartData({
     this.borderData,
+    this.touchData
   }) {
     borderData ??= ChartBorderStyle();
   }
@@ -132,9 +134,8 @@ class BaseTouchResponse {
 }
 
 class ChartTouchData {
-  final bool enabled;
+  final bool enabled ;
 
-  final StreamSink<BaseTouchResponse> touchResponseSink;
 
-  const ChartTouchData(this.enabled, this.touchResponseSink);
+  const ChartTouchData({this.enabled = true});
 }

@@ -9,8 +9,8 @@ abstract class BaseChartPainter<D extends BaseChartData> extends CustomPainter {
   final D data;
   Paint borderPaint;
   TouchEventNotifier touchEventNotifier;
-  StreamSink<BaseTouchResponse> touchResponseSink;
-  BaseChartPainter(this.data,{this.touchEventNotifier,this.touchResponseSink}) {
+  BaseChartPainter(this.data,{this.touchEventNotifier}):
+        super(repaint: data.touchData.enabled ? touchEventNotifier : null) {//这边是触摸事件重绘的关键代码。repaint：xxxx
     borderPaint = Paint()..style = PaintingStyle.stroke;
   }
 

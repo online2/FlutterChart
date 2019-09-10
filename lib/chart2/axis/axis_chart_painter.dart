@@ -13,8 +13,8 @@ abstract class AxisChartPainter<D extends AxisChartData>
 
   Paint gridPaint, backgroundPaint;
 
-  AxisChartPainter(this.data,{TouchEventNotifier touchEventNotifier, StreamSink<BaseTouchResponse> touchResponseSink}) :
-        super(data,touchEventNotifier:touchEventNotifier,touchResponseSink:touchResponseSink) {
+  AxisChartPainter(this.data,{TouchEventNotifier touchEventNotifier}) :
+        super(data,touchEventNotifier:touchEventNotifier) {
     gridPaint = Paint()..style = PaintingStyle.stroke;
 
     backgroundPaint = Paint()..style = PaintingStyle.fill;

@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chart/chart2/axis/axis_chart_data.dart';
 import 'package:flutter_chart/chart2/base/base_chart_data.dart';
+import 'package:flutter_chart/chart2/base/touch_event.dart';
 
 class LineChartData extends AxisChartData {
   final List<LineChartBarData> lineBarsData;
   final ChartTitlesStyle titlesStyle;
   final ChartLegendStyle chartLegendStyle;
-
+  final ChartTouchData lineTouchData;
 
   LineChartData({
     this.lineBarsData = const [],
     this.titlesStyle = const ChartTitlesStyle(),
     this.chartLegendStyle = const ChartLegendStyle(),
+    this.lineTouchData  = const ChartTouchData(),
     ChartGridStyle gridData = const ChartGridStyle(),
     ChartBorderStyle borderData,
     double minX,
@@ -25,6 +27,7 @@ class LineChartData extends AxisChartData {
           borderData: borderData,
           clipToBorder: clipToBorder,
           backgroundColor: backgroundColor,
+          touchData:lineTouchData
         ) {
     calculateMaxMin(minX, maxX, minY, maxY);
   }
@@ -177,4 +180,29 @@ class LineFillStyle{
     this.gradientColorStops,
   });
 
+}
+
+class LineTouchedSpot extends TouchedPoint {
+  LineChartBarData barData;
+
+  LineTouchedSpot(
+      this.barData,
+      ChartPoint spot,
+      Offset offset,
+      ) : super(spot, offset);
+
+  @override
+  Color getColor() {
+    return barData.lineColors[0];
+  }
+}
+
+class LineTouchResponse extends BaseTouchResponse {
+
+  final List<LineTouchedSpot> spots;
+
+  LineTouchResponse(
+      this.spots,
+      TouchEvent touchEvent,
+      ) : super(touchEvent);
 }
