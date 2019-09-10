@@ -10,7 +10,7 @@ class AxisChartData extends BaseChartData {
 
   AxisChartData({
     this.chartGridStyle = const ChartGridStyle(),
-    ChartBorderStyle borderData,
+    ChartBorderStyle borderStyle,
     ChartTouchStyle touchData,
     this.minX,
     this.maxX,
@@ -18,11 +18,11 @@ class AxisChartData extends BaseChartData {
     this.maxY,
     this.clipToBorder = false,
     this.backgroundColor,
-  }) : super(borderData: borderData, touchData: touchData);
+  }) : super(borderStyle: borderStyle, touchStyle: touchData);
 }
 
 //分割线相关
-typedef GetGridLine = ChartLine Function(double value);
+typedef GetShowGridLine = ChartLine Function(double value);
 
 ChartLine defaultGridLine(double value) {
   return const ChartLine(
@@ -41,28 +41,28 @@ bool showAllGrids(double value) {
 class ChartGridStyle {
   final bool show;
 
-  // XAxisGrid
-  final bool drawXAxisGrid;
+  // 水平方向的分割线
+  final bool drawHorizontalGrid;
   final double horizontalInterval;
-  final GetGridLine getXAxisGridLine;
-  final CheckToShowGrid checkToShowXAxisGrid;
+  final GetShowGridLine getHorizontalGridLine;
+  final CheckToShowGrid checkToShowHorizontalGrid;
 
-  // YAxisGrid
-  final bool drawYAxisGrid;
+  // 竖直方向的分割线
+  final bool drawVerticalGrid;
   final double verticalInterval;
-  final GetGridLine getYAxisGridLine;
-  final CheckToShowGrid checkToShowYAxisGrid;
+  final GetShowGridLine getVerticalGridLine;
+  final CheckToShowGrid checkToShowVerticalGrid;
 
   const ChartGridStyle({
     this.show = true,
-    this.drawXAxisGrid = false,
+    this.drawHorizontalGrid = false,
     this.horizontalInterval = 1.0,
-    this.getXAxisGridLine = defaultGridLine,
-    this.checkToShowXAxisGrid = showAllGrids,
-    this.drawYAxisGrid = true,
+    this.getHorizontalGridLine = defaultGridLine,
+    this.checkToShowHorizontalGrid = showAllGrids,
+    this.drawVerticalGrid = true,
     this.verticalInterval = 1.0,
-    this.getYAxisGridLine = defaultGridLine,
-    this.checkToShowYAxisGrid = showAllGrids,
+    this.getVerticalGridLine = defaultGridLine,
+    this.checkToShowVerticalGrid = showAllGrids,
   });
 }
 
@@ -118,7 +118,7 @@ class LimitLineData {
       {this.showHorizontalLines = true,
       this.showHorizontalLimitTip = true,
       this.horizontalLines = const [],
-      this.showVerticalLines = true,
+      this.showVerticalLines = false,
       this.verticalLines = const []});
 }
 

@@ -10,7 +10,7 @@ abstract class BaseChartPainter<D extends BaseChartData> extends CustomPainter {
   Paint borderPaint;
   TouchEventNotifier touchEventNotifier;
   BaseChartPainter(this.data,{this.touchEventNotifier}):
-        super(repaint: data.touchData.enabled ? touchEventNotifier : null) {//这边是触摸事件重绘的关键代码。repaint：xxxx
+        super(repaint: data.touchStyle.enabled ? touchEventNotifier : null) {//这边是触摸事件重绘的关键代码。repaint：xxxx
     borderPaint = Paint()..style = PaintingStyle.stroke;
   }
 
@@ -20,7 +20,7 @@ abstract class BaseChartPainter<D extends BaseChartData> extends CustomPainter {
   }
 
   void drawViewBorder(Canvas canvas, Size size) {
-    if(!(data.borderData?.show ?? false)){
+    if(!(data.borderStyle?.show ?? false)){
       return;
     }
     var chartViewSize = getChartDrawSize(size);
@@ -31,26 +31,28 @@ abstract class BaseChartPainter<D extends BaseChartData> extends CustomPainter {
     var bottomLeft = Offset(getLeftOffsetDrawSize(), getTopOffsetDrawSize() + chartViewSize.height);
     var bottomRight = Offset(getLeftOffsetDrawSize() + chartViewSize.width, getTopOffsetDrawSize() + chartViewSize.height);
 
-    /// Draw Top Line
-    borderPaint.color = data.borderData.border.top.color;
-    borderPaint.strokeWidth = data.borderData.border.top.width;
-    canvas.drawLine(topLeft, topRight, borderPaint);
+    if(data.borderStyle.isShowTop){
+      borderPaint.color = data.borderStyle.border.top.color;
+      borderPaint.strokeWidth = data.borderStyle.border.top.width;
+      canvas.drawLine(topLeft, topRight, borderPaint);
+    }
+    if(data.borderStyle.isShowRight){
+      borderPaint.color = data.borderStyle.border.right.color;
+      borderPaint.strokeWidth = data.borderStyle.border.right.width;
+      canvas.drawLine(topRight, bottomRight, borderPaint);
+    }
 
-    /// Draw Right Line
-    borderPaint.color = data.borderData.border.right.color;
-    borderPaint.strokeWidth = data.borderData.border.right.width;
-    canvas.drawLine(topRight, bottomRight, borderPaint);
+    if(data.borderStyle.isShowBottom){
+      borderPaint.color = data.borderStyle.border.bottom.color;
+      borderPaint.strokeWidth = data.borderStyle.border.bottom.width;
+      canvas.drawLine(bottomRight, bottomLeft, borderPaint);
+    }
 
-    /// Draw Bottom Line
-    borderPaint.color = data.borderData.border.bottom.color;
-    borderPaint.strokeWidth = data.borderData.border.bottom.width;
-    canvas.drawLine(bottomRight, bottomLeft, borderPaint);
-
-    /// Draw Left Line
-    borderPaint.color = data.borderData.border.left.color;
-    borderPaint.strokeWidth = data.borderData.border.left.width;
-    canvas.drawLine(bottomLeft, topLeft, borderPaint);
-
+    if(data.borderStyle.isShowLeft){
+      borderPaint.color = data.borderStyle.border.left.color;
+      borderPaint.strokeWidth = data.borderStyle.border.left.width;
+      canvas.drawLine(bottomLeft, topLeft, borderPaint);
+    }
   }
 
 

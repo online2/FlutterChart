@@ -1,25 +1,29 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_chart/chart2/axis/axis_chart_data.dart';
 
 class BaseChartData {
-  ChartBorderStyle borderData;
-  ChartTouchStyle touchData;
+  ChartBorderStyle borderStyle;
+  ChartTouchStyle touchStyle;
 
-  BaseChartData({
-    this.borderData,
-    this.touchData
-  }) {
-    borderData ??= ChartBorderStyle();
+  BaseChartData({this.borderStyle, this.touchStyle}) {
+    borderStyle ??= ChartBorderStyle();
   }
 }
 
 class ChartBorderStyle {
   final bool show;
+  final bool isShowLeft;
+  final bool isShowRight;
+  final bool isShowTop;
+  final bool isShowBottom;
   Border border;
 
   ChartBorderStyle({
     this.show = true,
+    this.isShowBottom = true,
+    this.isShowTop = false,
+    this.isShowLeft = true,
+    this.isShowRight  = false,
     this.border,
   }) {
     border ??= Border.all(
@@ -46,14 +50,14 @@ class ChartTitlesStyle {
 
 class TitlesStyle {
   final bool showTitles;
-  final GetTitleValueFormat getTitles;
+  final GetTitleValueFormat getTitlesFormat;
   final double reservedSize;
   final TextStyle textStyle;
   final double margin;
 
   const TitlesStyle({
     this.showTitles = false,
-    this.getTitles = defaultGetTitle,
+    this.getTitlesFormat = defaultGetTitle,
     this.reservedSize = 20,
     this.textStyle = const TextStyle(
       color: Colors.black,
@@ -121,14 +125,12 @@ class ChartLegendStyle {
 }
 
 enum ChartLegendForm { SQUARE, CIRCLE }
-enum ChartLegendAlignment { LEFT, CENTER, RIGHT }
+enum ChartLegendAlignment { LEFT, RIGHT } //CENTER暂未实现
+
 enum ChartLegendLocation { TOP, BOTTOM }
 
-
-
 class ChartTouchStyle {
-  final bool enabled ;
-
+  final bool enabled;
 
   const ChartTouchStyle(this.enabled);
 }

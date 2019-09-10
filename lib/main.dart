@@ -5,6 +5,7 @@ import 'package:flutter_chart/chart2/linechart/line_chart_data.dart';
 
 import 'chart2/axis/axis_chart_data.dart';
 import 'chart2/base/base_chart_data.dart';
+import 'line_chart_1.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,11 +13,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Chart Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+//      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: LineChartStyle1(),
     );
   }
 }
@@ -59,10 +61,28 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               width: 300,
               height: 300,
-              child: FlChart(
+              child: FlutterChart(
                 chart: LineChart(LineChartData(
-                  limitLineData: LimitLineData(showHorizontalLines: true,horizontalLines: [HorizontalLimitLine(y: 2.5,color: Colors.deepPurpleAccent,strokeWidth: 1,text: "限制线")],showVerticalLines: true,verticalLines: [VerticalLimitLine(x: 8,color: Colors.deepPurpleAccent,strokeWidth: 1)]),
-                  chartLegendStyle: ChartLegendStyle(showLegend: true,textStyle: new TextStyle(color: Colors.red,fontSize: 12),legendText: ["测试1","测试二"]),
+                  limitLineData: LimitLineData(
+                      showHorizontalLines: true,
+                      horizontalLines: [
+                        HorizontalLimitLine(
+                            y: 2.5,
+                            color: Colors.deepPurpleAccent,
+                            strokeWidth: 1,
+                            text: "限制线")
+                      ],
+                      showVerticalLines: true,
+                      verticalLines: [
+                        VerticalLimitLine(
+                            x: 8,
+                            color: Colors.deepPurpleAccent,
+                            strokeWidth: 1)
+                      ]),
+                  chartLegendStyle: ChartLegendStyle(
+                      showLegend: true,
+                      textStyle: new TextStyle(color: Colors.red, fontSize: 12),
+                      legendText: ["测试1", "测试二"]),
                   titlesStyle: ChartTitlesStyle(
                       show: true,
                       leftTitles: TitlesStyle(
@@ -70,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         reservedSize: 22,
                         textStyle: TextStyle(
                             color: const Color(0xff68737d), fontSize: 10),
-                        getTitles: (value) {
+                        getTitlesFormat: (value) {
                           return "${value.toInt()}K";
                         },
                         margin: 8,
@@ -80,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         reservedSize: 22,
                         textStyle: TextStyle(
                             color: const Color(0xff68737d), fontSize: 10),
-                        getTitles: (value) {
+                        getTitlesFormat: (value) {
                           return "${value.toInt()}";
                         },
                         margin: 8,
@@ -90,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         reservedSize: 22,
                         textStyle: TextStyle(
                             color: const Color(0xff68737d), fontSize: 10),
-                        getTitles: (value) {
+                        getTitlesFormat: (value) {
                           return "${value.toInt()}";
                         },
                         margin: 8,
@@ -100,24 +120,24 @@ class _MyHomePageState extends State<MyHomePage> {
                         reservedSize: 22,
                         textStyle: TextStyle(
                             color: const Color(0xff68737d), fontSize: 10),
-                        getTitles: (value) {
+                        getTitlesFormat: (value) {
                           return "${value.toInt()}";
                         },
                         margin: 8,
                       )),
                   gridData: ChartGridStyle(
                       show: true,
-                      drawXAxisGrid: true,
-                      getXAxisGridLine: gridLine2,
-                      checkToShowXAxisGrid: (double value) {
+                      drawHorizontalGrid: true,
+                      getHorizontalGridLine: gridLine2,
+                      checkToShowHorizontalGrid: (double value) {
                         return value != 0;
                       },
-                      drawYAxisGrid: true,
-                      getYAxisGridLine: gridLine,
-                      checkToShowYAxisGrid: (double value) {
+                      drawVerticalGrid: true,
+                      getVerticalGridLine: gridLine,
+                      checkToShowVerticalGrid: (double value) {
                         return value != 0;
                       }),
-                  borderData: ChartBorderStyle(
+                  borderStyle: ChartBorderStyle(
                       show: true,
                       border: Border.all(
                           color: Colors.yellow,
@@ -130,12 +150,18 @@ class _MyHomePageState extends State<MyHomePage> {
 //                   backgroundColor: Colors.grey,
                   lineBarsData: [
                     LineChartBarData(
-                      chartValueStyle: ChartValueStyle(show: true,textStyle:  TextStyle(color: Colors.black, fontSize: 10,fontWeight: FontWeight.bold),margin:6,valueFormat: (ChartPoint point){
-                        return point.y.toInt().toString() +" k";
-                      }),
+                        chartValueStyle: ChartValueStyle(
+                            show: true,
+                            textStyle: TextStyle(
+                                color: Colors.black,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold),
+                            margin: 6,
+                            valueFormat: (ChartPoint point) {
+                              return point.y.toInt().toString() + " k";
+                            }),
                         spots: [
                           ChartPoint(0, 0),
-
                           ChartPoint(1, 1),
                           ChartPoint(3, 1.5),
                           ChartPoint(5, 1.4),

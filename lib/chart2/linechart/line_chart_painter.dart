@@ -269,12 +269,13 @@ class LineChartPainter extends AxisChartPainter {
     }
 
     final leftTitle = data.titlesStyle.leftTitles;
+    double stepY = data.maxY - data.minY >0 ? data.minY : 0;
     if(leftTitle.showTitles){
       double verticalStep = data.minY;
-      while(verticalStep<=data.maxY){
+      while(verticalStep <= data.maxY){
         double x = 0 + getLeftOffsetDrawSize();
         double y =  getPixelY(verticalStep, size);
-        final text = leftTitle.getTitles((verticalStep));
+        final text = leftTitle.getTitlesFormat((verticalStep));
         TextSpan span = TextSpan(style: leftTitle.textStyle,text: text);
         final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
         tp.layout(maxWidth: getHorizontalSpace());
@@ -282,7 +283,7 @@ class LineChartPainter extends AxisChartPainter {
         y -= tp.height / 2;
         tp.paint(canvas, Offset(x, y));
 
-        verticalStep += data.chartGridStyle.verticalInterval;
+        verticalStep += data.chartGridStyle.verticalInterval + stepY;
       }
     }
 
@@ -293,7 +294,7 @@ class LineChartPainter extends AxisChartPainter {
       while(verticalStep<=data.maxY){
         double x = size.width + getLeftOffsetDrawSize();
         double y =  getPixelY(verticalStep, size);
-        final text = leftTitle.getTitles((verticalStep));
+        final text = leftTitle.getTitlesFormat((verticalStep));
         TextSpan span = TextSpan(style: rightTitles.textStyle,text: text,);
         final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
         tp.layout(maxWidth: getHorizontalSpace());
@@ -309,10 +310,10 @@ class LineChartPainter extends AxisChartPainter {
     final topTitle = data.titlesStyle.topTitles;
     if(topTitle.showTitles){
       double verticalStep = data.minX;
-      while(verticalStep<=data.maxX){
+      while(verticalStep <= data.maxX){
         double x = getPixelX(verticalStep, size);
         double y = 0 +getTopOffsetDrawSize();
-        final text = topTitle.getTitles((verticalStep));
+        final text = topTitle.getTitlesFormat((verticalStep));
         TextSpan span = TextSpan(style: topTitle.textStyle,text: text);
         final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
         tp.layout();
@@ -331,7 +332,7 @@ class LineChartPainter extends AxisChartPainter {
         double x = getPixelX(verticalStep, size);
         double y = size.height +getTopOffsetDrawSize();
 
-        final text = bottomTitle.getTitles((verticalStep));
+        final text = bottomTitle.getTitlesFormat((verticalStep));
 
         TextSpan span = TextSpan(style: bottomTitle.textStyle,text: text);
         final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
@@ -367,8 +368,8 @@ class LineChartPainter extends AxisChartPainter {
         case  ChartLegendAlignment.RIGHT:
           _drawBottomRightLegend(size, chartLegendStyle, canvas, legendSize);
           break ;
-        case ChartLegendAlignment.CENTER:
-          break;
+//        case ChartLegendAlignment.CENTER:
+//          break;
       }
     } else {
       switch(chartLegendStyle.chartLegendAlignment){
@@ -378,14 +379,14 @@ class LineChartPainter extends AxisChartPainter {
         case  ChartLegendAlignment.RIGHT:
           _drawTopRightLegend(size, chartLegendStyle, canvas, legendSize);
           break ;
-        case ChartLegendAlignment.CENTER:
-          break;
+//        case ChartLegendAlignment.CENTER:
+//          break;
       }
     }
   }
 
   void _drawTopRightLegend(Size size, ChartLegendStyle chartLegendStyle, Canvas canvas, double legendSize) {
-     double verticalStep = size.width;
+    double verticalStep = size.width ;
     for (int i = data.chartLegendStyle.legendText.length - 1; i >= 0; i--) {
       double x = verticalStep;
       double y = getTopOffsetDrawSize() - chartLegendStyle.margin;
@@ -393,7 +394,8 @@ class LineChartPainter extends AxisChartPainter {
       final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
       tp.layout();
       y -= tp.height * 2;
-      tp.paint(canvas, Offset(x, y));
+      x -= tp.width - getLeftOffsetDrawSize();
+      tp.paint(canvas, Offset(x , y));
       double legendY;
       double legendX;
       if (chartLegendStyle.chartLegendForm == ChartLegendForm.SQUARE) {
@@ -440,7 +442,7 @@ class LineChartPainter extends AxisChartPainter {
   }
 
   void _drawBottomRightLegend(Size size, ChartLegendStyle chartLegendStyle, Canvas canvas, double legendSize) {
-     double verticalStep = size.width;
+     double verticalStep = size.width ;
     for (int i = data.chartLegendStyle.legendText.length - 1; i >= 0; i--) {
       double x = verticalStep;
       double y = size.height + getTopOffsetDrawSize();
@@ -448,9 +450,14 @@ class LineChartPainter extends AxisChartPainter {
       final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
       tp.layout();
       y = y + tp.height;
+      x -= tp.width - getLeftOffsetDrawSize();
+      if(data.titlesStyle.show && data.titlesStyle.bottomTitles.showTitles){
+        y += data.titlesStyle.bottomTitles.textStyle.fontSize;
+      }
       tp.paint(canvas, Offset(x, y));
       double legendY;
       double legendX;
+
       if(chartLegendStyle.chartLegendForm == ChartLegendForm.SQUARE){
          legendY = y + tp.height / 2 - chartLegendStyle.legendSize / 4;
          legendX = x - chartLegendStyle.legendSize - chartLegendStyle.margin;
@@ -477,6 +484,10 @@ class LineChartPainter extends AxisChartPainter {
       final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
       tp.layout();
       y += tp.height;
+
+      if(data.titlesStyle.show && data.titlesStyle.bottomTitles.showTitles){
+        y += data.titlesStyle.bottomTitles.textStyle.fontSize;
+      }
       if(chartLegendStyle.chartLegendForm == ChartLegendForm.SQUARE){
         double legendY = y + tp.height / 2 - chartLegendStyle.legendSize / 4;
         _setLegendPaint(chartLegendStyle, i, Offset(legendX, y), Offset(legendX + chartLegendStyle.legendSize, y));

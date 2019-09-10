@@ -34,16 +34,33 @@ abstract class AxisChartPainter<D extends AxisChartData>
     if (!data.chartGridStyle.show || data.chartGridStyle == null) {
       return;
     }
-
 //    绘制竖直线
-    if (data.chartGridStyle.drawYAxisGrid) {
-      double verticalStep = data.minY;
-      while (verticalStep < data.maxY) {
-        if (data.chartGridStyle.checkToShowYAxisGrid(verticalStep)) {
-          final ChartLine chartLine = data.chartGridStyle.getYAxisGridLine(verticalStep);
+    if (data.chartGridStyle.drawVerticalGrid) {
+      double horizontalStep = data.minX;
+      while ( horizontalStep < data.maxX) {
+        if (data.chartGridStyle.checkToShowVerticalGrid(horizontalStep)) {
+          final ChartLine chartLine = data.chartGridStyle.getVerticalGridLine(horizontalStep);
           gridPaint.color = chartLine.color;
           gridPaint.strokeWidth = chartLine.strokeWidth;
+          final double bothX = getPixelX(horizontalStep, size);
+          final double x1 = bothX;
+          final double y1 = 0 + getTopOffsetDrawSize();
+          final double x2 = bothX;
+          final double y2 = size.height + getTopOffsetDrawSize();
+          canvas.drawLine(Offset(x1, y1), Offset(x2, y2), gridPaint);
+        }
+        horizontalStep += data.chartGridStyle.horizontalInterval;
+      }
+    }
 
+    //绘制水平线
+    if (data.chartGridStyle.drawHorizontalGrid) {
+      double verticalStep = data.minY;
+      while (verticalStep < data.maxY) {
+        if (data.chartGridStyle.checkToShowHorizontalGrid(verticalStep)) {
+          final ChartLine chartLine = data.chartGridStyle.getHorizontalGridLine(verticalStep);
+          gridPaint.color = chartLine.color;
+          gridPaint.strokeWidth = chartLine.strokeWidth;
           final double bothY = getPixelY(verticalStep, size);
           final double x1 = 0 + getLeftOffsetDrawSize();
           final double y1 = bothY;
@@ -52,26 +69,6 @@ abstract class AxisChartPainter<D extends AxisChartData>
           canvas.drawLine(Offset(x1, y1), Offset(x2, y2), gridPaint);
         }
         verticalStep += data.chartGridStyle.verticalInterval;
-      }
-    }
-
-    //绘制水平线
-    if (data.chartGridStyle.drawXAxisGrid) {
-      double horizontalStep = data.minX;
-      while (horizontalStep < data.maxX) {
-        if (data.chartGridStyle.checkToShowXAxisGrid(horizontalStep)) {
-          final ChartLine chartLine = data.chartGridStyle.getXAxisGridLine(horizontalStep);
-          gridPaint.color = chartLine.color;
-          gridPaint.strokeWidth = chartLine.strokeWidth;
-
-          final double bothX = getPixelX(horizontalStep, size);
-          final double x1 = bothX;
-          final double y1 = 0 + getTopOffsetDrawSize();
-          final double x2 = bothX;
-          final double y2 = size.width + getTopOffsetDrawSize();
-          canvas.drawLine(Offset(x1, y1), Offset(x2, y2), gridPaint);
-        }
-        horizontalStep += data.chartGridStyle.horizontalInterval;
       }
     }
   }

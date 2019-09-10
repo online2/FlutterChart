@@ -17,7 +17,7 @@ class LineChartData extends AxisChartData {
     this.lineChartTouchStyle = const LineChartTouchStyle(),
     this.limitLineData = const LimitLineData(),
     ChartGridStyle gridData = const ChartGridStyle(),
-    ChartBorderStyle borderData,
+    ChartBorderStyle borderStyle,
     double minX,
     double maxX,
     double minY,
@@ -26,7 +26,7 @@ class LineChartData extends AxisChartData {
     Color backgroundColor,
   }) : super(
             chartGridStyle: gridData,
-            borderData: borderData,
+      borderStyle: borderStyle,
             clipToBorder: clipToBorder,
             backgroundColor: backgroundColor,
             touchData: lineChartTouchStyle) {

@@ -5,10 +5,10 @@ import 'package:flutter_chart/chart2/base/touch_event.dart';
 
 import 'base/base_chart.dart';
 
-class FlChart extends StatefulWidget {
+class FlutterChart extends StatefulWidget {
   final BaseChart chart;
 
-  FlChart({
+  FlutterChart({
     Key key,
     @required this.chart,
   }) : super(key: key) {
@@ -18,10 +18,10 @@ class FlChart extends StatefulWidget {
   }
 
   @override
-  State<StatefulWidget> createState() => _FlChartState();
+  State<StatefulWidget> createState() => _FlutterChartState();
 }
 
-class _FlChartState extends State<FlChart> {
+class _FlutterChartState extends State<FlutterChart> {
   TouchEventNotifier _touchInputNotifier;
 
   @override
