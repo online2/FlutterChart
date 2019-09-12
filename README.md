@@ -9,4 +9,4 @@
 
 ## LinChart
 
-效果图：![图片](https://github.com/online2/FlutterChart/blob/master/image/linchart1.png)
+效果图：![图片](https://github.com/online2/FlutterChart/blob/master/image/linchartstyle1.png)
