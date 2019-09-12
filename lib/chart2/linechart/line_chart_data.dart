@@ -26,7 +26,7 @@ class LineChartData extends AxisChartData {
     Color backgroundColor,
   }) : super(
             chartGridStyle: gridData,
-      borderStyle: borderStyle,
+            borderStyle: borderStyle,
             clipToBorder: clipToBorder,
             backgroundColor: backgroundColor,
             touchData: lineChartTouchStyle) {
@@ -193,9 +193,10 @@ class LineTouchedSpot extends TouchedPoint {
 
   LineTouchedSpot(
     this.barData,
-    ChartPoint spot,
-    Offset offset,
-  ) : super(spot, offset);
+    ChartPoint spot, //点坐标
+    Offset offset, //点对应屏幕坐标
+     double offsetDiff,//点坐标和触摸点坐标y轴差值
+  ) : super(spot, offset, offsetDiff: offsetDiff);
 
   @override
   Color getColor() {
@@ -204,11 +205,18 @@ class LineTouchedSpot extends TouchedPoint {
 }
 
 class LineChartTouchStyle extends ChartTouchStyle {
-
   final Color indicatorColor;
   final double indicatorWidth;
   final double indicatorThreshold;
   final bool isShowIndicator;
+  final TouchTopTicStyle touchTopTicStyle;
 
-  const LineChartTouchStyle({ bool enable = true,this.indicatorColor = Colors.black,this.indicatorWidth = 0.5,this.indicatorThreshold = 20,this.isShowIndicator = true}) : super(enable);
+  const LineChartTouchStyle(
+      {bool enable = true,
+      this.indicatorColor = Colors.black,
+      this.indicatorWidth = 0.5,
+      this.indicatorThreshold = 20,
+      this.isShowIndicator = true,
+      this.touchTopTicStyle = const TouchTopTicStyle()})
+      : super(enable);
 }

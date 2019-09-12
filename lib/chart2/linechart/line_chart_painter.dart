@@ -26,7 +26,8 @@ class LineChartPainter extends AxisChartPainter {
 
   @override
   bool shouldRepaint(LineChartPainter oldDelegate) {
-    return true;
+    return  oldDelegate.data != data ||
+        oldDelegate.touchEventNotifier != touchEventNotifier;
   }
 
   @override
@@ -36,56 +37,67 @@ class LineChartPainter extends AxisChartPainter {
       return;
     }
 
-    Path cubicPath;
-    Path linePath;
     size = getChartDrawSize(size);
     for (var linData in data.lineBarsData) {
       switch (linData.lineMode) {
         case LineMode.LINEAR:
-          linePath = drawLineFill(canvas, size, linData);
+           drawLineFill(canvas, size, linData);
           break;
         case LineMode.CUBIC_BEZIER:
-          cubicPath = drawCubicLineFill(canvas, size, linData);
+          drawCubicLineFill(canvas, size, linData);
           break;
       }
     }
-    final List<LineTouchedSpot> touchedSpots = [];
+    List<LineTouchedSpot> touchedSpots = [];
 
     for (var linData in data.lineBarsData) {
       switch (linData.lineMode) {
         case LineMode.LINEAR:
-          drawLine(canvas, size, linePath, linData);
+          drawLine(canvas, size, linData);
           break;
         case LineMode.CUBIC_BEZIER:
-          drawLineCubicBezier(canvas, cubicPath, size, linData);
+          drawLineCubicBezier(canvas, size, linData);
           break;
       }
       drawDots(canvas, size, linData);
-      drawValue(canvas,size,linData);
 
       var nearestTouchedSpot = _getNearestTouchedSpot(canvas, size, linData);
       if(nearestTouchedSpot!=null){
         touchedSpots.add(nearestTouchedSpot);
       }
     }
+    for (var linData in data.lineBarsData) {
+      drawValue(canvas,size,linData);
+    }
+
     drawTitle(canvas,size);
 
     drawLegend(canvas,size);
+    List<LineTouchedSpot> newTouchedSpots = [];
+    if(touchedSpots.isNotEmpty){
+      touchedSpots.sort((LineTouchedSpot a,LineTouchedSpot b){
+        return a.offsetDiff.compareTo(b.offsetDiff);
+      });
+      newTouchedSpots= touchedSpots.sublist(0,1);
+    }
 
     if(data.lineChartTouchStyle.isShowIndicator){
-      drawTouchIndicator(canvas,size,touchedSpots);
+      drawTouchIndicator(canvas,size,newTouchedSpots);
     }
 
     drawLimitLine(canvas,size);
+
+    super.drawTouchTopTip(canvas,size,data.lineChartTouchStyle.touchTopTicStyle,newTouchedSpots);
   }
 
-  //画直线
-  void drawLine(Canvas canvas, Size size, Path linePath, LineChartBarData linData) {
-    _setLinePaint(linData, size);
 
-    if (linePath == null) {
-      linePath = _generateLinePath(size, linData);
-    }
+
+
+
+  //画直线
+  void drawLine(Canvas canvas, Size size, LineChartBarData linData) {
+    _setLinePaint(linData, size);
+    Path linePath = _generateLinePath(size, linData);
     canvas.drawPath(linePath, barPaint);
   }
 
@@ -152,10 +164,10 @@ class LineChartPainter extends AxisChartPainter {
   }
 
   //画贝塞尔曲线
-  void drawLineCubicBezier(Canvas canvas, Path cubicPath, Size size, LineChartBarData linData) {
+  void drawLineCubicBezier(Canvas canvas, Size size, LineChartBarData linData) {
     _setLinePaint(linData, size);
 
-    var linePath = cubicPath == null ? _generateCubicLinePath(size, linData) : cubicPath;
+    var linePath =  _generateCubicLinePath(size, linData);
     canvas.drawPath(linePath, barPaint);
   }
 
@@ -630,13 +642,12 @@ class LineChartPainter extends AxisChartPainter {
     }
     var toucheOffset = touchEvent.getOffset();
     double threshold = data.lineChartTouchStyle.indicatorThreshold;
+    //找出所有符合触摸点的附近位置的点
     for(ChartPoint point in linData.spots){
       if((toucheOffset.dx - getPixelX(point.x, size)).abs() <= threshold && (toucheOffset.dy - getPixelY(point.y, size)).abs() <= threshold * 2 ){
-        final Offset nearestSpotPos = Offset(
-          getPixelX(point.x, size),
-          getPixelY(point.y, size),
-        );
-        return LineTouchedSpot(linData,point,nearestSpotPos);
+        final Offset nearestSpotPos = Offset(getPixelX(point.x, size), getPixelY(point.y, size),);
+        double offsetDiff = toucheOffset.dy - getPixelY(point.y, size);
+        return LineTouchedSpot(linData,point,nearestSpotPos,offsetDiff.abs());
       }
     }
     return null;
@@ -656,7 +667,6 @@ class LineChartPainter extends AxisChartPainter {
 
     touchLinePaint.color = data.lineChartTouchStyle.indicatorColor;
     touchLinePaint.strokeWidth = data.lineChartTouchStyle.indicatorWidth;
-    touchedSpots.sort((a,b) =>a.offset.dy.compareTo(b.offset.dy));
     for(int i = 0; i < touchedSpots.length; i++){
       LineTouchedSpot touchedSpot = touchedSpots[i];
       final fromHor = Offset(getLeftOffsetDrawSize(),getPixelY(touchedSpot.spot.y,size));
@@ -786,6 +796,7 @@ class LineChartPainter extends AxisChartPainter {
     }
     return sum;
   }
+
 
 
 }

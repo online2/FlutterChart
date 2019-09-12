@@ -97,10 +97,11 @@ class ChartPoint {
 abstract class TouchedPoint {
   final ChartPoint spot;
   final Offset offset;
+  final double offsetDiff;
 
   TouchedPoint(
     this.spot,
-    this.offset,
+    this.offset,{this.offsetDiff = 0}
   );
 
   Color getColor();
@@ -147,4 +148,41 @@ class VerticalLimitLine extends ChartLine {
       : super(color: color, strokeWidth: strokeWidth);
 }
 
-enum HorizontalLimitAlignment { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT,TOP_CENTER,BOTTOM_CENTER }
+enum HorizontalLimitAlignment {
+  TOP_LEFT,
+  TOP_RIGHT,
+  BOTTOM_LEFT,
+  BOTTOM_RIGHT,
+  TOP_CENTER,
+  BOTTOM_CENTER
+}
+
+class TouchTopTicStyle {
+  final bool show;
+  final Color topTipColor;
+  final double topTipRadius;
+  final EdgeInsets topTipEdgInsets;
+  final TextStyle topTipTextStyle;
+  final double topTipMargin;
+  final double maxWidth;
+  final GetTopTipText  getTopTipText;
+
+
+  const TouchTopTicStyle(
+      {this.show = true,
+      this.topTipColor = const Color(0x88000000),
+      this.topTipRadius = 4,
+      this.topTipEdgInsets = const EdgeInsets.all(6),
+      this.topTipTextStyle = const TextStyle(color: Colors.white, fontSize: 10),
+      this.topTipMargin = 5,
+      this.maxWidth = 50,
+      this.getTopTipText = defaultTopTipText});
+}
+
+typedef GetTopTipText = String Function(ChartPoint value);
+
+
+String  defaultTopTipText(ChartPoint point) {
+  return point.y.toInt().toString();
+}
+

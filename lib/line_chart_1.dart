@@ -18,6 +18,12 @@ class _LinChartStyle1 extends State<LineChartStyle1> {
   LineMode lineMode;
   bool isStrokeCapRound;
   List<Color> lineColors;
+  bool isLine = true;
+  bool isOpenTouchEvent = true;
+  bool isShowTopValue = true;
+  bool isShowIndicator = true;
+
+
 
   @override
   void initState() {
@@ -41,7 +47,9 @@ class _LinChartStyle1 extends State<LineChartStyle1> {
             child: FlutterChart(
                 chart: LineChart(LineChartData(
                     gridData: ChartGridStyle(
-                        drawHorizontalGrid:false, drawVerticalGrid: false),
+                        drawHorizontalGrid: false,
+                        drawVerticalGrid: false,
+                        verticalInterval: 10),
                     borderStyle: ChartBorderStyle(
                         show: true,
                         isShowBottom: true,
@@ -66,7 +74,7 @@ class _LinChartStyle1 extends State<LineChartStyle1> {
                           lineMode: lineMode,
                           isStrokeCapRound: isStrokeCapRound,
                           lineWidth: 4,
-                          lineColors: lineColors,
+                          lineColors: [Colors.blue],
                           lineDotStyle: LineDotStyle(
                               isStroke: true,
                               strokeWidth: 4,
@@ -85,13 +93,47 @@ class _LinChartStyle1 extends State<LineChartStyle1> {
                               valueFormat: ((ChartPoint point) {
                                 return point.y.toInt().toString() + "%";
                               }))),
+
+                      LineChartBarData(
+                          spots: [
+                            ChartPoint(1, 0),
+                            ChartPoint(2, 15),
+                            ChartPoint(3, 35),
+                            ChartPoint(4, 40),
+                            ChartPoint(5, 30),
+                            ChartPoint(6, 30),
+                            ChartPoint(7, 15),
+                          ],
+                          lineMode: lineMode,
+                          isStrokeCapRound: isStrokeCapRound,
+                          lineWidth: 4,
+                          lineColors: [Colors.red],
+                          lineDotStyle: LineDotStyle(
+                              isStroke: true,
+                              strokeWidth: 4,
+                              dotColor: Colors.red,
+                              dotSize: 4,
+                              //可以过滤掉一些不需要显示的点
+                              checkToShowDot: ((ChartPoint spot) {
+                                return true;
+                              })),
+                          lineFillStyle: LineFillStyle(
+                              show: true, colors: [Color(0x66E57373)]),
+                          chartValueStyle: ChartValueStyle(
+                              show: true,
+                              textStyle:
+                              TextStyle(color: Colors.red, fontSize: 10),
+                              valueFormat: ((ChartPoint point) {
+                                return point.y.toInt().toString() + "%";
+                              }))),
                     ],
                     titlesStyle: ChartTitlesStyle(
                         show: true,
                         leftTitles: TitlesStyle(
                             showTitles: true,
+                            reservedSize: 30,
                             getTitlesFormat: ((double value) {
-                              return '$value%';
+                              return '${value.toInt()}%';
                             })),
                         bottomTitles: TitlesStyle(
                             showTitles: true,
@@ -108,11 +150,18 @@ class _LinChartStyle1 extends State<LineChartStyle1> {
                         chartLegendForm: ChartLegendForm.CIRCLE,
                         chartLegendAlignment: ChartLegendAlignment.RIGHT,
                         chartLegendLocation: ChartLegendLocation.BOTTOM,
-                        legendText: ["每日比增"]),
+                        legendText: ["每日比增","上周每日"]),
                     lineChartTouchStyle: LineChartTouchStyle(
-                        enable: false,//关闭触摸响应
+                        enable: isOpenTouchEvent,//关闭触摸响应
+                        isShowIndicator: isShowIndicator,
                         indicatorColor: Colors.black,
-                        indicatorWidth: 0.5),
+                        indicatorWidth: 0.5,
+                        touchTopTicStyle: TouchTopTicStyle(
+                            show: isShowTopValue,
+                            topTipMargin: 5,
+                            topTipEdgInsets: EdgeInsets.all(6),getTopTipText: (ChartPoint point){
+                              return "y = "+point.y.toInt().toString();
+                        })),
                     limitLineData: LimitLineData(
                         showHorizontalLines: true,
                         horizontalLines: [
@@ -127,7 +176,98 @@ class _LinChartStyle1 extends State<LineChartStyle1> {
                               strokeWidth: 0.5)
                         ],
                         showVerticalLines: false)))),
-          )
+          ),
+          Row(
+            children: <Widget>[
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isLine = !isLine;
+                    if (isLine) {
+                      lineMode = LineMode.LINEAR;
+                    } else {
+                      lineMode = LineMode.CUBIC_BEZIER;
+                    }
+                  });
+                },
+                child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(10)),
+                    margin: EdgeInsets.only(top: 32, left: 16),
+                    width: 90,
+                    height: 35,
+                    child: Center(
+                      child: Text(
+                        isLine ? "直线" : "贝塞尔曲线",
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
+                    )),
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isOpenTouchEvent = !isOpenTouchEvent;
+                  });
+                },
+                child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(10)),
+                    margin: EdgeInsets.only(top: 32, left: 16),
+                    width: 110,
+                    height: 35,
+                    child: Center(
+                      child: Text(
+                        isOpenTouchEvent ? "关闭触摸提示" : "打开触摸提示",
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
+                    )),
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isShowTopValue = !isShowTopValue;
+                  });
+                },
+                child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(10)),
+                    margin: EdgeInsets.only(top: 32, left: 16),
+                    width: 110,
+                    height: 35,
+                    child: Center(
+                      child: Text(
+                        isShowTopValue ? "关闭头部value" : "显示头部value",
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
+                    )),
+              )
+            ],
+          ),
+          Row(children: <Widget>[
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  isShowIndicator = !isShowIndicator;
+                });
+              },
+              child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(10)),
+                  margin: EdgeInsets.only(top: 16, left: 16),
+                  width: 110,
+                  height: 35,
+                  child: Center(
+                    child: Text(
+                      isShowIndicator ? "关闭触摸指示器" : "打开触摸指示器",
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  )),
+            )
+          ],)
         ]));
   }
 }

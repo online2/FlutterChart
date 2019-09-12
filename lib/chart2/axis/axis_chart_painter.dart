@@ -1,23 +1,26 @@
-import 'dart:async';
 import 'dart:ui';
 
-import 'package:flutter_chart/chart2/base/base_chart_data.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_chart/chart2/base/base_chart_painter.dart';
 import 'package:flutter_chart/chart2/base/touch_event.dart';
+import 'package:flutter_chart/chart2/linechart/line_chart_data.dart';
 
 import 'axis_chart_data.dart';
 
 abstract class AxisChartPainter<D extends AxisChartData>
     extends BaseChartPainter<D> {
-  final D data;
+   final D data;
 
-  Paint gridPaint, backgroundPaint;
+  Paint gridPaint, backgroundPaint,touchTopTipPaint;
 
   AxisChartPainter(this.data,{TouchEventNotifier touchEventNotifier}) :
         super(data,touchEventNotifier:touchEventNotifier) {
     gridPaint = Paint()..style = PaintingStyle.stroke;
 
     backgroundPaint = Paint()..style = PaintingStyle.fill;
+    touchTopTipPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.white;
   }
 
   @override
@@ -89,6 +92,69 @@ abstract class AxisChartPainter<D extends AxisChartData>
       backgroundPaint,
     );
   }
+
+  void drawTouchTopTip(Canvas canvas, Size size, TouchTopTicStyle touchTopTicStyle,List<LineTouchedSpot> touchedSpots) {
+    if(touchTopTicStyle == null || !touchTopTicStyle.show){
+      return;
+    }
+    if(touchEventNotifier == null  || touchEventNotifier.value == null){
+      return;
+    }
+//    手指抬起关闭indicatorLine
+//    if(touchEventNotifier.value is ChartPressUp){
+//      return;
+//    }
+    if(touchedSpots == null || touchedSpots.isEmpty){
+      return;
+    }
+
+    final List<TextPainter> textPainter = [];
+    for(int i = 0 ;i < touchedSpots.length; i++){
+      final TextSpan span = TextSpan(style: touchTopTicStyle.topTipTextStyle, text:touchTopTicStyle.getTopTipText(touchedSpots[i].spot) );
+      final TextPainter tp = TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+      tp.layout(maxWidth: touchTopTicStyle.maxWidth);
+      textPainter.add(tp);
+    }
+
+    double biggerWidth = 0;
+    double sumTextsHeight = 0;
+    for (TextPainter tp in textPainter) {
+      if (tp.width > biggerWidth) {
+        biggerWidth = tp.width;
+      }
+      sumTextsHeight += tp.height;
+    }
+    sumTextsHeight += (textPainter.length - 1) * touchTopTicStyle.topTipMargin;
+
+
+    final Offset mostTopOffset = touchedSpots.first.offset;
+
+    final double tooltipWidth = biggerWidth + touchTopTicStyle.topTipEdgInsets.horizontal;
+    final double tooltipHeight = sumTextsHeight + touchTopTicStyle.topTipEdgInsets.vertical;
+
+    final Rect rect = Rect.fromLTWH(mostTopOffset.dx - (tooltipWidth / 2), mostTopOffset.dy - tooltipHeight - touchTopTicStyle.topTipMargin * 2, tooltipWidth, tooltipHeight);
+    final Radius radius = Radius.circular(touchTopTicStyle.topTipRadius);
+    final RRect roundedRect = RRect.fromRectAndCorners(rect, topLeft: radius, topRight: radius, bottomLeft: radius, bottomRight: radius);
+    touchTopTipPaint.color = touchTopTicStyle.topTipColor;
+    canvas.drawRRect(roundedRect, touchTopTipPaint);
+
+    double topPosSeek = touchTopTicStyle.topTipEdgInsets.top;
+    for (TextPainter tp in textPainter) {
+      final drawOffset = Offset(
+        rect.center.dx - (tp.width / 2),
+        rect.topCenter.dy + topPosSeek,
+      );
+      tp.paint(canvas, drawOffset);
+      topPosSeek += tp.height;
+      topPosSeek += touchTopTicStyle.topTipMargin;
+    }
+
+  }
+
+
+
+
+
 
   double getPixelX(double spotX, Size chartUsableSize) {
     return (((spotX - data.minX) / (data.maxX - data.minX)) * chartUsableSize.width) + getLeftOffsetDrawSize();
