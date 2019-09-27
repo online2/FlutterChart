@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chart/chart2/fl_chart.dart';
-import 'package:flutter_chart/chart2/linechart/line_chart.dart';
-import 'package:flutter_chart/chart2/linechart/line_chart_data.dart';
+import 'package:flutter_chart/uieffect/waterview/wave_view.dart';
+import 'package:flutter_chart/uieffect/waterview/wave_view.dart';
 
-import 'chart2/axis/axis_chart_data.dart';
-import 'chart2/base/base_chart_data.dart';
-import 'line_chart_1.dart';
+import 'package:flutter_chart/chart/line_chart_1.dart';
 
 void main() => runApp(MyApp());
 
@@ -70,6 +67,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
+//            WaterView(),
+            Container(
+              height: 300,
+              width: 150,
+              child: WaveView(parentWidgetSize: Size(150, 300),),
+            )
           ],
         ),
       ),

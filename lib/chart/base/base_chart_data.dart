@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chart/chart2/axis/axis_chart_data.dart';
+import 'package:flutter_chart/chart/axis/axis_chart_data.dart';
 
 class BaseChartData {
   ChartBorderStyle borderStyle;

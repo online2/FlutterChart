@@ -1,7 +1,6 @@
-import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_chart/chart2/base/touch_event.dart';
+import 'package:flutter_chart/chart/base/touch_event.dart';
 
 import 'base_chart_data.dart';
 

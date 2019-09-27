@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chart/chart2/base/base_chart_data.dart';
+import 'package:flutter_chart/chart/base/base_chart_data.dart';
 
 class AxisChartData extends BaseChartData {
   final ChartGridStyle chartGridStyle;

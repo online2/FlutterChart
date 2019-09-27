@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chart/chart2/axis/axis_chart_data.dart';
-import 'package:flutter_chart/chart2/base/base_chart_data.dart';
-import 'package:flutter_chart/chart2/linechart/line_chart.dart';
-import 'package:flutter_chart/chart2/linechart/line_chart_data.dart';
+import 'package:flutter_chart/chart/axis/axis_chart_data.dart';
+import 'package:flutter_chart/chart/base/base_chart_data.dart';
+import 'package:flutter_chart/chart/linechart/line_chart.dart';
+import 'package:flutter_chart/chart/linechart/line_chart_data.dart';
 
-import 'chart2/fl_chart.dart';
+import 'package:flutter_chart/chart/ui/fl_chart.dart';
 
 class LineChartStyle1 extends StatefulWidget {
   static final String sName = "LineChartStyle1";

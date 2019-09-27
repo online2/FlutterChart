@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chart/chart2/axis/axis_chart_data.dart';
-import 'package:flutter_chart/chart2/base/base_chart_data.dart';
-import 'package:flutter_chart/chart2/base/touch_event.dart';
+import 'package:flutter_chart/chart/axis/axis_chart_data.dart';
+import 'package:flutter_chart/chart/base/base_chart_data.dart';
 
 class LineChartData extends AxisChartData {
   final List<LineChartBarData> lineBarsData;

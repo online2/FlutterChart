@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_chart/chart2/axis/axis_chart_data.dart';
-import 'package:flutter_chart/chart2/axis/axis_chart_painter.dart';
-import 'package:flutter_chart/chart2/base/base_chart_data.dart';
-import 'package:flutter_chart/chart2/base/touch_event.dart';
+import 'package:flutter_chart/chart/axis/axis_chart_data.dart';
+import 'package:flutter_chart/chart/axis/axis_chart_painter.dart';
+import 'package:flutter_chart/chart/base/base_chart_data.dart';
+import 'package:flutter_chart/chart/base/touch_event.dart';
 
 import 'line_chart_data.dart';
 import 'dart:ui' as ui;
@@ -12,7 +12,8 @@ class LineChartPainter extends AxisChartPainter {
   final LineChartData data;
   Paint barPaint, dotPaint, dotInnerPaint, fillPaint,valuePaint,legendPaint,touchLinePaint,limitLinePaint;
 
-  LineChartPainter(this.data,TouchEventNotifier touchEventNotifier) :
+//  double animPresent;
+  LineChartPainter(this.data,TouchEventNotifier touchEventNotifier, ) ://this.animPresent
         super(data,touchEventNotifier:touchEventNotifier) {
     barPaint = Paint()..style = PaintingStyle.stroke;
     dotPaint = Paint()..style = PaintingStyle.fill;
