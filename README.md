@@ -10,3 +10,13 @@
 ## LinChart
 
 效果图：![图片](https://github.com/online2/FlutterChart/blob/master/image/linchartstyle1.png)
+
+
+## WaveView
+
+效果图：![图片](https://github.com/online2/FlutterChart/blob/master/image/waveView.gif)
+
+使用：
+    WaveView(
+                parentWidgetSize: Size(150, 300),
+              )
